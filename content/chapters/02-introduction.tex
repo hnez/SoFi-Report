@@ -1,0 +1,35 @@
+Direction of arrival estimation of RF-Signals
+works by analyzing the signals received by
+multiple antennas distributed in space.
+
+The common approach is to exploit the fact
+that the signals received at antennas further
+away from a source are more affected by the channel
+they are transmitted over.
+
+The effect of the channel can be measured by
+observing the signal strength and/or phase
+at the receiving antennas.
+
+For systems where the distance between
+the sender and the receiving antennas is much
+smaller than the distance between the receiving
+antennas the difference in signal strength
+are usually very small and using the phase
+differences is expected to yield better results. \\
+
+The system that is presented uses Software-defined radio
+technology and fourier transformation to calculate DOA
+information for all signals present in a given frequency range.
+This is a stark contrast to common algorithms like
+MUSIC that use a cross-correlation Matrix as first
+processing step and are thereby limited to analyzing
+a frequency range that contains fewer signals than there
+are receivers. \\
+
+Using multiple cheap, independent receivers also
+has some drawbacks that have to be overcome like
+different lo frequencies and differences in sampling
+time. Solutions to these problems were partly implemented
+by modifying the hardware and partly by compensation
+in software.

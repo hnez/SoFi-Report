@@ -3,17 +3,18 @@
 *.out
 *.synctex.gz
 *.tex.orig
-*Bericht.pdf
-*Bericht-blx.bib
-*Bericht.bbl
-*Bericht.bcf
-*Bericht.blg
-*Bericht.run.xml
+*Report.pdf
+*Report-blx.bib
+*Report.bbl
+*Report.bcf
+*Report.blg
+*Report.run.xml
+*/Report.fdb_latexmk
+*/Report.fls
 *.tex.swp
-*/Bericht.fdb_latexmk
-*/Bericht.fls
 *.xcf
 *.DS_Store
+\#*
 
 revision.tex
 
