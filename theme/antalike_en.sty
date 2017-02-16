@@ -5,3 +5,18 @@
     TODO
   \end{titlepage}
 }
+
+% Make a figure from something
+% Parameters:
+%  1 File with Content
+%  2 Label
+%  3 Caption
+%  4 Relative width
+\newcommand{\figurizefile}[4] {
+  \begin{figure}
+    \centering
+    \resizebox{#4\textwidth}{!}{\input{#1}}
+    \caption{#3}
+    \label{#2}
+  \end{figure}
+}
