@@ -3,17 +3,17 @@
 
   \begin{tikzpicture}
     \draw
-    (2, 2.5) node[american not port](pierce_not){}
-    (pierce_not.out) to[short]
-    +(0.5, 0) to[short, -*]
-    +(0, -1.5) coordinate(pierce_out) to[piezoelectric]
-    (1, 1) to[short]
-    (1, 2.5) to[short]
+    (2.75, 2.25) node[american not port, rotate=270](pierce_not){}
+    (pierce_not.out) to[short, -*]
+    +(0, -0.5) coordinate(pierce_out) to[short]
+    +(-2, 0) to[piezoelectric]
+    +(0, 2.5) to[short]
+    +(2, 0) to[short]
     (pierce_not.in);
 
     \draw
     (pierce_out) to[short]
-    +(1, 0) coordinate(pierce_out_2) to[twoport, t=PLL, >]
+    +(1.5, 0) coordinate(pierce_out_2) to[twoport, t=PLL, >]
     +(0, 2) coordinate(mix_pll_out);
 
     \draw
@@ -33,7 +33,7 @@
     \draw
     (mixer_q.1) node[inputarrow]{} to[short]
     +(-1, 0) coordinate(ant_amp_out) to[amp, invert]
-    +(-2.5, 0) node[antenna](ant_in){};
+    +(-2.8, 0) node[antenna](ant_in){};
 
     \draw
     (ant_amp_out) to[short, *-]
@@ -64,12 +64,11 @@
     +(0.8, 0.8) node[inputarrow, rotate=45]{};
 
     \draw[dotted]
-    (0.25, 0.25) --
+    (1.50, 0.25) --
     (7.75, 0.25) --
     (7.75, 7.25) --
-    (3.25, 7.25) --
-    (0.25, 4.25) --
-    (0.25, 0.25);
+    (1.50, 7.25) --
+    (1.50, 0.25);
 
     \draw[dotted]
     (8, 0.25) --
@@ -79,7 +78,7 @@
     (8, 0.25);
 
     \draw
-    (3.75, 0.25) node[below]{E4000}
+    (4.375, 0.25) node[below]{E4000}
     (9.75, 0.25) node[below]{RTL2832U};
   \end{tikzpicture}
 
