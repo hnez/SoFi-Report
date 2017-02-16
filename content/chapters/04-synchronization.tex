@@ -1,15 +1,25 @@
+In addition to frequency locking that is performed in
+hardware additional synchronization steps have to
+be performed. These steps are now presented in the
+order they are performed. \\
+
+The first offset that needs to be compensated stems
+from the fact, that the SDR-dongles do not start
+recording samples at the same time.
+This effect is demonstrated in figures
+\ref{img:samples_actual_time} to \ref{img:samples_synchronized_time}. \\
+
 \figurizefile{diagrams/samples_actual_time.tex}
-             {img:startup_times}
-             {Sample missmatch caused by different startup times}
-             {0.7}
+             {img:samples_actual_time}
+             {Samples and the actual time they were taken}
+             {0.5}
 
 \figurizefile{diagrams/samples_observed_time.tex}
-             {img:startup_times}
-             {Sample missmatch caused by different startup times}
-             {0.7}
+             {img:samples_observed_time}
+             {Sample times when read from the device}
+             {0.5}
 
 \figurizefile{diagrams/samples_synchronized_time.tex}
-             {img:startup_times}
-             {Sample missmatch caused by different startup times}
-             {0.7}
-
+             {img:samples_synchronized_time}
+             {Samples after sample-exact synchronization}
+             {0.5}
