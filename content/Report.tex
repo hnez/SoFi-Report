@@ -3,24 +3,17 @@
 \usepackage{antalike_en}
 
 \begin{document}
- \anttitle
+  \anttitle
 
- \input{chapters/01-abstract}
+  \begin{topchapter}{Abstract}
+    \input{chapters/01-abstract}
+  \end{topchapter}
 
- \input{chapters/02-introduction}
+  \begin{topchapter}{Introduction}
+    \input{chapters/02-introduction}
+  \end{topchapter}
 
- \figurizefile{diagrams/sdr_clocks.tex}
-              {img:block_sdr_dongle}
-              {Block diagram of unmodified SDR-Dongles}
-              {0.9}
-
- \figurizefile{diagrams/sdr_clocks_chained.tex}
-              {img:block_sdr_dongle_chained}
-              {Block diagram of chained SDR-Dongles}
-              {0.9}
-
- \figurizefile{diagrams/annotated_hw_mods.tex}
-              {img:hw_mods}
-              {Hardware modifications to synchronize the clocks}
-              {0.9}
+  \begin{topchapter}{Hardware modifications}
+    \input{chapters/03-hardware-modifications}
+  \end{topchapter}
 \end{document}

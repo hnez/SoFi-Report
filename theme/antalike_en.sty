@@ -20,3 +20,21 @@
     \label{#2}
   \end{figure}
 }
+
+% Environment for top level chapters
+% Parameter:
+%  Name des Kapitels
+\newenvironment{topchapter}[1] {
+  \chapter{#1}
+}{
+}
+
+% Environment for subchapters
+\newenvironment{subchapter}[1] {
+  \section{#1}
+}{}
+
+% Environment for subsubchapters
+\newenvironment{subsubchapter}[1] {
+  \subsection{#1}
+}{}
