@@ -1,0 +1,52 @@
+\begin{tikzpicture}[x={(-0.989cm,-0.15cm)},y={(0cm,1cm)},z={(0.968cm,-0.25cm)}]
+  % Base plate
+  \draw[fill=SpringGreen, opacity=0.5]
+  (-1.2, 0, -1.2) --
+  ( 1.2, 0, -1.2) --
+  ( 1.2, 0,  1.2) --
+  (-1.2, 0,  1.2) --
+  cycle;
+
+  % face front
+  \draw[fill={SpringGreen!60!black}, opacity=0.5]
+  (1.2,    0, -1.2) --
+  (1.2, -0.1, -1.2) --
+  (1.2, -0.1,  1.2) --
+  (1.2,    0,  1.2) --
+  cycle;
+
+  % face side
+  \draw[fill={SpringGreen!80!black}, opacity=0.5]
+  (-1.2,    0,  1.2) --
+  (-1.2, -0.1,  1.2) --
+  ( 1.2, -0.1,  1.2) --
+  ( 1.2,    0,  1.2) --
+  cycle;
+
+  % Antennas
+  \draw[-o] (-0.8, 0, -0.8) -- +(0, 0.77, 0);
+  \draw[-o] ( 0.8, 0, -0.8) -- +(0, 0.77, 0);
+  \draw[-o] ( 0.8, 0,  0.8) -- +(0, 0.77, 0);
+  \draw[-o] (-0.8, 0,  0.8) -- +(0, 0.77, 0);
+
+  % Sinusoids
+  \draw[smooth, blue, opacity=0.5, variable=\x, samples at={-3.5, -3.4, ..., 2.1}]
+  plot (\x, {0.7 + -0.35 * sin(30 + 1.1*\x r)}, -0.8)
+  plot (\x, {0.7 + -0.35 * sin(30 + 1.1*\x r)}, 0.8);
+
+  % train tracks
+  \foreach \x in{-3.5, -3.2, ..., 2.1}
+    \draw[color=MidnightBlue, opacity=0.7]
+    (\x, {0.7 + -0.35 * sin(30 + 1.1*\x r)}, -0.8) --
+    (\x, {0.7 + -0.35 * sin(30 + 1.1*\x r)}, 0.8);
+
+  % arrows
+  \foreach \x in{-3.5, -3.2, ..., 2.1}
+    \draw[color=RoyalBlue, opacity=0.8]
+    (\x, 0.7, 0.8) -- (\x, {0.7 + -0.35 * sin(30 + 1.1*\x r)}, 0.8)
+    (\x, 0.7, -0.8) -- (\x, {0.7 + -0.35 * sin(30 + 1.1*\x r)}, -0.8);
+
+  % Axis
+  \draw[dotted, LimeGreen, ->] (-3.7, 0.7, -0.8) -- (2.3, 0.7, -0.8);
+  \draw[dotted, LimeGreen, ->] (-3.7, 0.7,  0.8) -- (2.3, 0.7,  0.8);
+\end{tikzpicture}
