@@ -1,0 +1,30 @@
+\begin{tikzpicture}
+  \draw
+  (1, 5) node[antenna](ant_in_1){}
+  (ant_in_1) to[short]
+  +(0.5, 0) to[twoport, t=SDR, >]
+  +(1.5, 0) to[twoport, t=$\bm{z}^{-n}$, >]
+  +(1.5, 0) to[twoport, t=FFT, >]
+  +(1.5, 0) coordinate(fft_out_1)
+  +(1.5, 0) node[mixer, anchor=west](fft_multiply){}
+  (fft_out_1) to[short]
+  (fft_multiply.1) node[inputarrow]{};
+
+  \draw
+  (0, 3.5) node[antenna](ant_in_1){}
+  (ant_in_1) to[short]
+  +(1.5, 0) to[twoport, t=SDR, >]
+  +(1.5, 0) to[twoport, t=$\bm{z}^{-m}$, >]
+  +(1.5, 0) to[twoport, t=FFT, >]
+  +(1.5, 0) to[twoport, t=$\bm{x}^{\ast}$, >]
+  +(1.5, 0) to[short]
+  +(0.5, 0) to[short]
+  (fft_multiply.2) node[inputarrow, rotate=90]{};
+
+  \draw
+  (fft_multiply.3) to[short]
+  +(0.5, 0) to[lowpass, >]
+  +(1.5, 0) to[twoport, t=$\downarrow \bm{N}$, >]
+  +(1.5, 0) to[short, -*]
+  +(0.5, 0);
+\end{tikzpicture}

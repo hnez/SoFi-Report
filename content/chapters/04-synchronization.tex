@@ -3,23 +3,134 @@ hardware additional synchronization steps have to
 be performed. These steps are now presented in the
 order they are performed. \\
 
-The first offset that needs to be compensated stems
-from the fact, that the SDR-dongles do not start
-recording samples at the same time.
-This effect is demonstrated in figures
-\ref{img:samples_actual_time} to \ref{img:samples_synchronized_time}. \\
 
-\figurizefile{diagrams/samples_actual_time.tex}
-             {img:samples_actual_time}
-             {Samples and the actual time they were taken}
-             {0.5}
+\begin{subchapter}{Sample-exact time compensation}
+  The first offset that needs to be compensated stems
+  from the fact, that the SDR-dongles do not start
+  recording samples at the same time.
+  This effect is demonstrated in figures
+  \ref{img:samples_actual_time} to \ref{img:samples_synchronized_time}. \\
 
-\figurizefile{diagrams/samples_observed_time.tex}
-             {img:samples_observed_time}
-             {Sample times when read from the device}
-             {0.5}
+  The first figure \ref{img:samples_actual_time} shows the
+  times at which samples were taken and put into the
+  sample buffer of the corresponding receiver along
+  with their index in the sample buffer.
+  In a more realisitic diagram the differences between the
+  times at which the first samples are taken would be
+  a lot bigger compared to the sampling rate as the
+  differences in startup time are usually in the range
+  of hundreds of milliseconds and the sampling rates are
+  of the order of a couple kiloherz to a few megaherz.
 
-\figurizefile{diagrams/samples_synchronized_time.tex}
-             {img:samples_synchronized_time}
-             {Samples after sample-exact synchronization}
-             {0.5}
+  \figurizefile{diagrams/samples_actual_time.tex}
+               {img:samples_actual_time}
+               {Samples and the actual time they were taken}
+               {0.5}
+
+  Upon reading the samples from the device buffers
+  the information about the absolute aquisition time is
+  lost. To a program reading the ADC data the
+  samples thus look like in figure \ref{img:samples_observed_time}.
+
+  \figurizefile{diagrams/samples_observed_time.tex}
+               {img:samples_observed_time}
+               {Sample times when read from the device}
+               {0.5}
+
+  In order to be able to analyze phase differences between
+  the signals later on they have to be synchronized to
+  a accuracy of a couple sampling times.
+  In figure \ref{img:samples_synchronized_time} all
+  samles that where recorded before all ADC where aquiring
+  data are discarded and the input streams are
+  synchronized to within one sampling time.
+
+  \figurizefile{diagrams/samples_synchronized_time.tex}
+               {img:samples_synchronized_time}
+               {Samples after sample-exact synchronization}
+               {0.5}
+
+  In order to perform this sample-exact synchronization
+  one of the receivers is used as a reference to which
+  the other receivers are synchronized by calculating the
+  cross-correlation to the other other receivers and discarding
+  samples from the receivers that are lagging behind. \\
+
+  To facilitate calculating the cross correlation over
+  more than $100k$ samples a fast fourier transformation
+  is used to transfer the calculation into the frequency domain.
+  The transformed cross-correlation calculation can be
+  seen in equation \ref{eq:fast_cross_correlation}, where
+  $\mathcal{F}$ denotes the fourier transformation,
+  $\mathcal{F}^{-1}$ is the inverse fourier transformation
+  and an asterisk marks the complex conjugate.
+
+  \begin{equation}
+    \label{eq:fast_cross_correlation}
+    f \star g = \mathcal{F}^{-1}\left(
+      \mathcal{F}\left( f \right)^{\ast}
+      \cdot
+      \mathcal{F}\left( g \right)
+    \right)
+  \end{equation}
+
+  This compensation step only has to be performed
+  once upon startup as the sampling clocks are
+  derived via PLL from the same base clock because
+  of the hardware modifications.
+\end{subchapter}
+
+\begin{subchapter}{Sub-sample time compensation}
+  As figure \ref{img:samples_actual_time} shows the
+  differences in sample time between the receivers do not
+  have to be integer multiples of the sample aquisition durations. \\
+
+  This implies, that the Sample-exact time compensation above
+  can not provide complete sample timing compensation as
+  a fractional difference still remains afterwards.
+
+  Compensating these offsets in the time domain would
+  require fractionally resampling the incoming data streams. \\
+
+  Instead all operations from now on will be performed
+  in the frequency domain. Figure \ref{img:preprocessing_chain}
+  shows the steps that are performed for every receiver pair prior to
+  the sub-sample synchronization. \\
+
+  \figurizefile{diagrams/preprocessing_chain.tex}
+               {img:preprocessing_chain}
+               {Block diagram of the preporcessing chain for two receivers}
+               {0.7}
+
+  The input streams from the receivers are first delayed
+  by the number of samples determined in the previous
+  synchronization step so that samples recoreded at the
+  same time are in the same position in the steams. \\
+
+  Next the samples are transformed into the time domain
+  using fast fourier transformations.
+  For one of the output vectors of the two FFTs the
+  complex conjugate is calculated element wise. \\
+
+  The resulting frequency-domain vectors are then
+  multiplied element wise. This complex conjugate multiplication
+  yields a vector of complex numbers which contain the
+  phase differences for the observed frequencies in
+  their argument. As can be seen in equation
+  \ref{eq:multiply_cplx_conj}.
+
+  \begin{equation}
+    \label{eq:multiply_cplx_conj}
+    \begin{split}
+      \bm{z}_\text{1} \cdot \bm{z}_\text{2}^{\ast}
+      & = \abs{\bm{z}_\text{1}} e^{\arg(\bm{z}_\text{1})}
+        \cdot
+        \abs{\bm{z}_\text{2}} e^{-\arg(\bm{z}_\text{2})} \\
+      & = \abs{\bm{z}_\text{1}} \cdot \abs{\bm{z}_\text{2}}
+        e^{\arg(\bm{z}_\text{1}) - \arg(\bm{z}_\text{2})} \\
+      & = A^{2} \cdot e^{\Delta \varphi}
+    \end{split}
+  \end{equation}
+
+
+\end{subchapter}
