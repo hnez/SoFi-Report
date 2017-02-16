@@ -1,4 +1,4 @@
-\ProvidesPackage{antalike_en}[2017/15/02 v0.1 ANT Theme lookalike]
+\ProvidesPackage{antropy_en}[2017/15/02 v0.1 ANT Theme lookalike]
 
 \newcommand{\anttitle}{
   \begin{titlepage}
@@ -13,7 +13,7 @@
 %  3 Caption
 %  4 Relative width
 \newcommand{\figurizefile}[4] {
-  \begin{figure}
+  \begin{figure}[h]
     \centering
     \resizebox{#4\textwidth}{!}{\input{#1}}
     \caption{#3}
@@ -25,16 +25,16 @@
 % Parameter:
 %  Name des Kapitels
 \newenvironment{topchapter}[1] {
-  \chapter{#1}
+  \section{#1}
 }{
 }
 
 % Environment for subchapters
 \newenvironment{subchapter}[1] {
-  \section{#1}
+  \subsection{#1}
 }{}
 
 % Environment for subsubchapters
 \newenvironment{subsubchapter}[1] {
-  \subsection{#1}
+  \subsubsection{#1}
 }{}
