@@ -1,0 +1,32 @@
+\begin{tikzpicture}[x={(0.968cm,-0.25cm)},y={(0cm,1cm)},z={(-0.989cm,-0.15cm)}]
+  % Axis
+  \foreach \y in{-2, 0, 2} {
+    \draw[black, ->] (0, \y, 0) -- +(4,  0, 0) node[right]{\tiny t};
+    \draw[black, ->] (0, \y, 0) -- +(0,  1, 0) node[above]{\tiny Re};
+    \draw[black, ->] (0, \y, 0) -- +(0,  0, 1) node[left]{\tiny Im};
+  }
+
+  % Arrows
+  \foreach \x in{0, 0.1, ..., 4} {
+    \draw[color=MidnightBlue, opacity=0.7, ->]
+    (\x, 0, 0) -- (\x, {0.7*sin(40 + 3*\x r)}, {0.7*cos(40 + 3*\x r)});
+
+    \draw[color=MidnightBlue, opacity=0.7, ->]
+    (\x, 2, 0) -- (\x, {2 + 0.7*sin(-60+3*\x r)}, {0.7*cos(-60+3*\x r)});
+
+    \draw[color=MidnightBlue, opacity=0.7, ->]
+    (\x, -2, 0) -- (\x, {-2 + 0.7*sin(100)}, {0.7*cos(100)});
+  }
+
+  % Sinusoids
+  \draw[smooth, blue, opacity=0.5, variable=\x, samples at={0, 0.1, ..., 4}]
+  plot (\x, {0.7*sin(40 + 3*\x r)}, {0.7*cos(40 + 3*\x r)})
+  plot (\x, {2 + 0.7*sin(-60+3*\x r)}, {0.7*cos(-60+3*\x r)})
+  plot (\x, {-2 + 0.7*sin(100)}, {0.7*cos(100)});
+
+  % Text annotations
+  \draw
+  (0, 3, 1) node[anchor=center]{$\bm{z}_1$}
+  (0, 1, 1) node[anchor=center]{$\bm{z}_2$}
+  (0,-1, 1) node[anchor=center]{$\bm{z}_1^\ast\cdot\bm{z}_1$};
+\end{tikzpicture}
