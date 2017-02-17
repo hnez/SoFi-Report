@@ -1,0 +1,10 @@
+\begin{tikzpicture}
+  \node[anchor=south west,inner sep=0](image) at (0,0) {
+    \includegraphics[width=\linewidth]{images/fft_cc_mul_magnitude.png}
+  };
+
+  \begin{scope}[x={(image.south east)},y={(image.north west)}]
+    \draw[->] (0, 0) -- (1, 0);
+    \draw[->] (0, 0) -- (0, 1);
+  \end{scope}
+\end{tikzpicture}

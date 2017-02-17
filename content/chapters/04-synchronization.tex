@@ -3,7 +3,6 @@ hardware additional synchronization steps have to
 be performed. These steps are now presented in the
 order they are performed. \\
 
-
 \begin{subchapter}{Sample-exact time compensation}
   The first offset that needs to be compensated stems
   from the fact, that the SDR-dongles do not start
@@ -117,7 +116,14 @@ order they are performed. \\
   yields a vector of complex numbers which contain the
   phase differences for the observed frequencies in
   their argument. As can be seen in equation
-  \ref{eq:multiply_cplx_conj}.
+  \ref{eq:multiply_cplx_conj}. \\
+
+  The effect of this operation on the same complex signal
+  shifted in phase can be seen in figure \ref{img:complex_conjugate_mul} \\
+
+  In order to reduce the processing load on the following stages
+  the resulting complex values are then low pass filtered by
+  averaging and subsequently decimated.
 
   \begin{equation}
     \label{eq:multiply_cplx_conj}
@@ -137,5 +143,29 @@ order they are performed. \\
                {Complex conjugate multiplication of phase shifted signals}
                {0.6}
 
+  \figurizefile{diagrams/annotated_fft_mag.tex}
+               {img:annotated_fft_mag}
+               {LULZ}
+               {1}
+
+  \figurizefile{diagrams/annotated_fft_phase_orig.tex}
+               {img:annotated_fft_phase_orig}
+               {LULZ}
+               {1}
+
+  \figurizefile{diagrams/annotated_fft_phase_timesync.tex}
+               {img:annotated_fft_phase_timesync}
+               {LULZ}
+               {1}
+
+  \figurizefile{diagrams/annotated_fft_phase_comp.tex}
+               {img:annotated_fft_phase_comp}
+               {LULZ}
+               {1}
+
+  \figurizefile{diagrams/annotated_fft_phase_zoom.tex}
+               {img:annotated_fft_phase_zoom}
+               {LULZ}
+               {1}
 
 \end{subchapter}
