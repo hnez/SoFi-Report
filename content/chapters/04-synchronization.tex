@@ -143,29 +143,68 @@ order they are performed. \\
                {Complex conjugate multiplication of phase shifted signals}
                {0.6}
 
+  As these operations are performed for every pair
+  of antennas in the array, $n_\text{ant}$ input
+  signals are mapped to $\left(n_\text{ant}-1\right)!$
+  output signals.
+  In all the measurements taken four antennas are used
+  that produce six difference signals. \\
+
+  In figure \ref{img:annotated_fft_mag} the mean
+  absolute values of the resulting complex output
+  vectors can be seen. The peaks in the diagram indicate
+  the presence of a sender at that frequency.
+
   \figurizefile{diagrams/annotated_fft_mag.tex}
                {img:annotated_fft_mag}
-               {LULZ}
+               {Mean magnitude spectrum for four receivers}
                {1}
+
+  Figure \ref{img:annotated_fft_phase_orig} shows the phases
+  of the six complex output vectors. When correlating the
+  diagram with figure \ref{img:annotated_fft_mag} one can already
+  see some bumps in the phase differences where there are strong senders. \\
+
+  One can also see a rather steep sloping of the phases,
+  this is due to the sub-sample timing offsets between the
+  ADCs, to compensate them a linear correction is applied.
+  The resulting sample time compensated phase diagram can be seen in
+  figure \ref{img:annotated_fft_phase_timesync}.
 
   \figurizefile{diagrams/annotated_fft_phase_orig.tex}
                {img:annotated_fft_phase_orig}
-               {LULZ}
+               {Raw phase differences for four receivers}
                {1}
 
   \figurizefile{diagrams/annotated_fft_phase_timesync.tex}
                {img:annotated_fft_phase_timesync}
-               {LULZ}
+               {Phase differences after sample time offset compensation}
                {1}
+\end{subchapter}
+
+\begin{subchapter}{Tuner phase offset compensation}
+  Figure \ref{img:annotated_fft_phase_timesync} shows a flattened
+  phase diagram, but there are still constant offsets.
+  These offsets are caused by different phases of the LO-signals
+  that are used for mixing down the RF-signals in the tuners. \\
+
+  Figure \ref{img:annotated_fft_phase_comp} shows the phases
+  after compensating for those offsets. Frequency ranges where
+  the noise is dominant show no phase differences between
+  the receivers, while ranges with active senders contain
+  visible bumps. When zoomed in like in figure \ref{img:annotated_fft_phase_zoom}
+  these bumps become a lot more prominent. \\
+
+  The relative phase differences will later be used to
+  determine the direction of the incoming signal.
 
   \figurizefile{diagrams/annotated_fft_phase_comp.tex}
                {img:annotated_fft_phase_comp}
-               {LULZ}
+               {Completely compensated phase diagram}
                {1}
 
   \figurizefile{diagrams/annotated_fft_phase_zoom.tex}
                {img:annotated_fft_phase_zoom}
-               {LULZ}
+               {Completely compensated phase diagram (zoomed in)}
                {1}
-
 \end{subchapter}

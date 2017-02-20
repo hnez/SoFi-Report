@@ -1,4 +1,44 @@
+How phase differences between different receivers
+can be used to calculate the direction of arrival of an
+input wave can best be described in a diagram like
+figure \ref{img:phased_array}.
+
+The diagram shows four antennas spaced out on a plane
+and a stilized wave that is received by all four of them.
+The source of the wave is assumed to be so far away that
+the rays are approximately parallel when they reach the receivers. \\
+
+In the depicted constellation the signal has to travel the
+same distance to reach the receivers $A$ and $B$, thus the
+phase at those receivers is the same.
+On the other hand the signal hat to travel further to reach
+receiver $D$ that to reach $A$, the difference in phase can
+be directly calculated from the wavelength of the signal and
+the distance between the antennas.
+
 \figurizefile{diagrams/phased_array.tex}
              {img:phased_array}
              {Array of four antennas with a sender to the far right}
+             {0.7}
+
+In a more realistic scenario the the signals will reach the
+receivers at odd angles. Figure \ref{img:angle_two_receivers}
+shows an example where a signal reaches the receivers at an
+angle of $\alpha=\SI{45}{\degree}$. The length that can be calculated
+from the phase difference $\Delta \varphi$ between the receivers and
+the wavelength $\lambda$ of the signal is marked as $\Delta l$.
+
+The direction of arrival $\alpha$ can then be calculated from
+those lengths using equation \ref{eq:doa_trigonometry}.
+
+\begin{equation}
+  \label{eq:doa_trigonometry}
+  \alpha
+  = \arccos \left( \frac{\Delta l}{d} \right)
+  = \arccos \left( \frac{\Delta \varphi \cdot \lambda}{2 \pi d} \right)
+\end{equation}
+
+\figurizefile{diagrams/angle_two_receivers.tex}
+             {img:angle_two_receivers}
+             {Signal arriving at an angle of \SI{45}{\degree}}
              {0.7}

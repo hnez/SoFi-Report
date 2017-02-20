@@ -24,10 +24,10 @@
   cycle;
 
   % Antennas
-  \draw[-o] (-0.8, 0, -0.8) -- +(0, 0.77, 0);
-  \draw[-o] ( 0.8, 0, -0.8) -- +(0, 0.77, 0);
-  \draw[-o] ( 0.8, 0,  0.8) -- +(0, 0.77, 0);
-  \draw[-o] (-0.8, 0,  0.8) -- +(0, 0.77, 0);
+  \draw[-o] (-0.8, 0, -0.8) -- +(0, 0.77, 0) node[above]{\tiny{A}};
+  \draw[-o] ( 0.8, 0, -0.8) -- +(0, 0.77, 0) node[above]{\tiny{D}};
+  \draw[-o] ( 0.8, 0,  0.8) -- +(0, 0.77, 0) node[above]{\tiny{C}};
+  \draw[-o] (-0.8, 0,  0.8) -- +(0, 0.77, 0) node[above]{\tiny{B}};
 
   % Sinusoids
   \draw[smooth, blue, opacity=0.5, variable=\x, samples at={-3.5, -3.4, ..., 2.1}]
