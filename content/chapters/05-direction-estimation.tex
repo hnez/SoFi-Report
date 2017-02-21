@@ -1,44 +1,69 @@
-How phase differences between different receivers
-can be used to calculate the direction of arrival of an
-input wave can best be described in a diagram like
-figure \ref{img:phased_array}.
+\begin{subchapter}{From phase to angle}
+  How phase differences between different receivers
+  can be used to calculate the direction of arrival of an
+  input wave can best be described in a diagram like
+  figure \ref{img:phased_array}.
 
-The diagram shows four antennas spaced out on a plane
-and a stilized wave that is received by all four of them.
-The source of the wave is assumed to be so far away that
-the rays are approximately parallel when they reach the receivers. \\
+  The diagram shows four antennas spaced out on a plane
+  and a stilized wave that is received by all four of them.
+  The source of the wave is assumed to be so far away that
+  the rays are approximately parallel when they reach the receivers. \\
 
-In the depicted constellation the signal has to travel the
-same distance to reach the receivers $A$ and $B$, thus the
-phase at those receivers is the same.
-On the other hand the signal hat to travel further to reach
-receiver $D$ that to reach $A$, the difference in phase can
-be directly calculated from the wavelength of the signal and
-the distance between the antennas.
+  In the depicted constellation the signal has to travel the
+  same distance to reach the receivers $A$ and $B$, thus the
+  phase at those receivers is the same.
+  On the other hand the signal hat to travel further to reach
+  receiver $D$ that to reach $A$, the difference in phase can
+  be directly calculated from the wavelength of the signal and
+  the distance between the antennas.
 
-\figurizefile{diagrams/phased_array.tex}
-             {img:phased_array}
-             {Array of four antennas with a sender to the far right}
-             {0.7}
+  \figurizefile{diagrams/phased_array.tex}
+               {img:phased_array}
+               {Array of four antennas with a sender to the far right}
+               {0.7}
 
-In a more realistic scenario the the signals will reach the
-receivers at odd angles. Figure \ref{img:angle_two_receivers}
-shows an example where a signal reaches the receivers at an
-angle of $\alpha=\SI{45}{\degree}$. The length that can be calculated
-from the phase difference $\Delta \varphi$ between the receivers and
-the wavelength $\lambda$ of the signal is marked as $\Delta l$.
+  In a more realistic scenario the the signals will reach the
+  receivers at odd angles. Figure \ref{img:angle_two_receivers}
+  shows an example where a signal reaches the receivers at an
+  angle of $\alpha=\SI{45}{\degree}$. The length that can be calculated
+  from the phase difference $\Delta \varphi$ between the receivers and
+  the wavelength $\lambda$ of the signal is marked as $\Delta l$.
 
-The direction of arrival $\alpha$ can then be calculated from
-those lengths using equation \ref{eq:doa_trigonometry}.
+  The direction of arrival $\alpha$ can then be calculated from
+  those lengths using equation \ref{eq:doa_trigonometry}.
 
-\begin{equation}
-  \label{eq:doa_trigonometry}
-  \alpha
-  = \arccos \left( \frac{\Delta l}{d} \right)
-  = \arccos \left( \frac{\Delta \varphi \cdot \lambda}{2 \pi d} \right)
-\end{equation}
+  \begin{equation}
+    \label{eq:doa_trigonometry}
+    \alpha
+    = \arccos \left( \frac{\Delta l}{d} \right)
+    = \arccos \left( \frac{\Delta \varphi \cdot \lambda}{2 \pi d} \right)
+  \end{equation}
 
-\figurizefile{diagrams/angle_two_receivers.tex}
-             {img:angle_two_receivers}
-             {Signal arriving at an angle of \SI{45}{\degree}}
-             {0.7}
+  \figurizefile{diagrams/angle_two_receivers.tex}
+               {img:angle_two_receivers}
+               {Signal arriving at an angle of \SI{45}{\degree}}
+               {0.7}
+\end{subchapter}
+
+\begin{subchapter}{The effect of noise}
+  There is however a mayor drawback to the DOA-estimation
+  technique discussed above: it does not work in the prence of noise. \\
+
+  This is because noise can be assumed to have no distinct source.
+  If one were to inspect the signal phases in a system modeled after
+  the block diagram in figure \ref{img:preprocessing_chain} before
+  the averaging step, one would find that they look indeed quite random
+  as to be expected from noise.
+  But upon averaging the effects of the noise cancel out as can be seen in figure
+  \ref{img:annotated_fft_phase_zoom} where the phases for frequencies
+  without a strong signal are very close to zero. \\
+
+  This means, that in the presence of noise the measured phase differences
+  will always be smaller than those assumed in figure \ref{img:angle_two_receivers}
+  by a factor $f$.
+  Luckyly the effect of the noise can be assumed to be the same for
+  all antenna pairs and thus the factor $f$ can also be assumed to be the same. \\
+
+  Thus the algorithm used should be able to work relative phases that are
+  scaled by a constant value.
+\end{subchapter}
