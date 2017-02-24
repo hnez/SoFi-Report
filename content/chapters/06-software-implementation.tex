@@ -1,35 +1,130 @@
 The current implementation consists of three
 programs that are connected using UNIX pipes
-to form a DOA processing chain.
+to form a DOA processing chain. \\
 
-The components are: \\
+\begin{description}
+  \item[\texttt{backend/sofi}:] Performs the sample-exact
+    timing offset compensation and the processing steps
+    shown in figure \ref{img:preprocessing_chain}.
 
-- \texttt{backend/sofi} - Performs the sample-exact
-timing offset compensation and the processing steps
-shown in figure \ref{img:preprocessing_chain}. \\
+  \item[\texttt{frontend/sofi.py}:] Performs further preprocessing
+    and and calculates direction of arrival estimations.
 
-- \texttt{frontend/sofi.py} - Performs further preprocessing
-and and calculates direction of arrival estimations. \\
+  \item[\texttt{frontend/visualize.grc}:] Gnuradio flowchart
+    that displays the vectors calculated by the frontend code.
+\end{description}
 
-- \texttt{frontend/visualize.grc} - Gnuradio flowchart
-that displays the vectors calculated by the frontend code. \\
-
-\begin{subchapter}{Preprocessing}
+\begin{subchapter}{\texttt{backend/sofi}}
   As the preprocessing code has to deal with samples
   before the first downsamling stage the data rates to be
   processed are rather high.
   In order to be able to run on low-range computing hardware
-  this part is written in the C programming language and
+  this part of the processing chain is written in the C
+  programminglanguage and
   uses the highly optimized \texttt{fftw3} and \texttt{volk}
-  libraries, for accelerated FFT and vector operations, respectively. \\
+  libraries, for accelerated FFT and vector operations. \\
 
-  \begin{lstlisting}[language=C]
-    
-  \end{lstlisting}
+  Listing \ref{lst:pseudo_backend} contains the main source
+  file for the backend code stripped off of all error handling
+  for brevity. \\
+
+  The program flow starts off by initializing the SDR
+  dongles. The communication with the dongles is performed
+  by using a hardware abstraction for software-defined radio
+  devices that was introduced into recent versions of
+  the Linux kernel. This means that the program should work
+  with all SDR devices supported in the Linux kernel.
+
+  The actual transfer of samples is performed using
+  buffers that are shared between the application and
+  the kernel, to minizize the number of copy operations performed. \\
+
+  To utilize the processing power of multi-core processors
+  FFT calculations are performed in one thread per
+  SDR device, distributing the load over the available cores.
+
+  Once the SDR devices are initialized and aquireing samples
+  they are synchronized by calculating calculating the
+  cross-correlation and discarding samples.
+
+  All the operations after the synchronization phase are
+  performed in the frequency domain.
+  At this point the processing threads are started that
+  take the time domain samples from the shared buffers and transfer
+  them into the frequency domain.
+
+  For every receiver $m$ the FFT calculation yields phase
+  and magnitude information for $1024$ frequency bins.
+  The values $i_\text{m,n}$ in these frequency bins can not
+  be averaged directly as the current signal phase can be
+  influenced by signal modulation. When averaged over
+  a long enough timespan the values would thus cancle out. \\
+
+  In order to be able to perform the necessary averaging
+  and downsampling the phase differences are calulated prior
+  to the averaging using complex conjugate multiplication.
+  For four receivers this leads to six difference signals
+  that are calulated according to the ecuations seen below.
+
+  \begin{equation*}
+    \begin{aligned}[c]
+      o_\text{1,n}&= i_\text{1,n} \cdot i_\text{2,n}^{\ast} \\
+      o_\text{2,n}&= i_\text{1,n} \cdot i_\text{3,n}^{\ast} \\
+      o_\text{3,n}&= i_\text{1,n} \cdot i_\text{4,n}^{\ast}
+    \end{aligned}
+    \qquad \qquad
+    \begin{aligned}[c]
+      o_\text{4}&= i_\text{2,n} \cdot i_\text{3,n}^{\ast} \\
+      o_\text{5}&= i_\text{2,n} \cdot i_\text{4,n}^{\ast} \\
+      o_\text{6}&= i_\text{3,n} \cdot i_\text{4,n}^{\ast}
+    \end{aligned}
+  \end{equation*}
+
+  These values are then averaged and at specified
+  intervals the phases are extracted and passed to
+  the next processing step.
 \end{subchapter}
 
-\begin{subchapter}{DOA-estimation}
+\begin{subchapter}{\texttt{frontend/sofi.py}}
+  After the downsampling performed in the backend code
+  the data rate is greatly reduced, further processing
+  can thus be performed in Python, an interpreted scripting
+  language that makes writing DSP task easier
+  than programming in C.
+
+  The frontend code uses the \texttt{numpy} and
+  \texttt{scipy} libraries for easy and efficient
+  vector operations and signal processing tasks. \\
+
+  This part of the processing chain operates completely
+  in the frequency-domain, it is responsible for
+  performing the compensation tasks to get from the
+  raw phase diagram seen in Figure \ref{img:annotated_fft_phase_orig}
+  to the fully compensated phase diagram
+  seen in Figure \ref{img:annotated_fft_phase_zoom}
+  and using these phase diagrams to calulate direction informations
+  for the signal sources in the spectrum. \\
+
+  The compensation part works by first finding the local minima in
+  the amplitude spectrum seen in figure \ref{img:annotated_fft_mag},
+  these are the frequencies with the lowest signal strength
+  and can thus be assumed to be mainly noise.
+
+  As discussed before noise carries no direction
+  information and the phase difference between the
+  receivers should thus be, on average, zero.
+
+  The actual phase differences at the amplitude minima
+  is used as an error input to PID-controllers that
+  are configured to compensate for the per-receiver
+  mixer phase offsets and sub-sample acuisition
+  time differences. \\
+
+  After compensation the phase spectrogram looks mostly
+  flat with destinct deviations for frequencies
+  with strong signals, as can be seen in
+  figure \ref{img:annotated_fft_phase_zoom}.
 \end{subchapter}
 
-\begin{subchapter}{Visualization}
+\begin{subchapter}{\texttt{frontend/visualize.grc}}
 \end{subchapter}

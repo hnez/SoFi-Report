@@ -12,8 +12,9 @@
 %  2 Label
 %  3 Caption
 %  4 Relative width
-\newcommand{\figurizefile}[4] {
-  \begin{figure}[ht]
+%  5 Placement H or hp
+\newcommand{\figurizefile}[5] {
+  \begin{figure}[#5]
     \centering
     \resizebox{#4\textwidth}{!}{\input{#1}}
     \caption{#3}

@@ -6,6 +6,7 @@ export TEXINPUTS
 
 DEPENDENCIES= $(wildcard chapters/*.tex)
 DEPENDENCIES+= $(wildcard ../diagrams/*.tex)
+DEPENDENCIES+= $(wildcard ../code_snippets/*)
 
 .PHONY: all
 

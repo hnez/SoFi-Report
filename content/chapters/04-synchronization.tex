@@ -24,7 +24,7 @@ order they are performed. \\
   \figurizefile{diagrams/samples_actual_time.tex}
                {img:samples_actual_time}
                {Samples and the actual time they were taken}
-               {0.5}
+               {0.5}{ht}
 
   Upon reading the samples from the device buffers
   the information about the absolute aquisition time is
@@ -34,7 +34,7 @@ order they are performed. \\
   \figurizefile{diagrams/samples_observed_time.tex}
                {img:samples_observed_time}
                {Sample times when read from the device}
-               {0.5}
+               {0.5}{ht}
 
   In order to be able to analyze phase differences between
   the signals later on they have to be synchronized to
@@ -47,7 +47,7 @@ order they are performed. \\
   \figurizefile{diagrams/samples_synchronized_time.tex}
                {img:samples_synchronized_time}
                {Samples after sample-exact synchronization}
-               {0.5}
+               {0.5}{ht}
 
   In order to perform this sample-exact synchronization
   one of the receivers is used as a reference to which
@@ -99,7 +99,7 @@ order they are performed. \\
   \figurizefile{diagrams/preprocessing_chain.tex}
                {img:preprocessing_chain}
                {Block diagram of the preporcessing chain for two receivers}
-               {0.7}
+               {0.7}{ht}
 
   The input streams from the receivers are first delayed
   by the number of samples determined in the previous
@@ -141,7 +141,7 @@ order they are performed. \\
   \figurizefile{diagrams/complex_conjugate_mul.tex}
                {img:complex_conjugate_mul}
                {Complex conjugate multiplication of phase shifted signals}
-               {0.6}
+               {0.6}{ht}
 
   As these operations are performed for every pair
   of antennas in the array, $n_\text{ant}$ input
@@ -154,11 +154,6 @@ order they are performed. \\
   absolute values of the resulting complex output
   vectors can be seen. The peaks in the diagram indicate
   the presence of a sender at that frequency.
-
-  \figurizefile{diagrams/annotated_fft_mag.tex}
-               {img:annotated_fft_mag}
-               {Mean magnitude spectrum for four receivers}
-               {1}
 
   Figure \ref{img:annotated_fft_phase_orig} shows the phases
   of the six complex output vectors. When correlating the
@@ -174,12 +169,7 @@ order they are performed. \\
   \figurizefile{diagrams/annotated_fft_phase_orig.tex}
                {img:annotated_fft_phase_orig}
                {Raw phase differences for four receivers}
-               {1}
-
-  \figurizefile{diagrams/annotated_fft_phase_timesync.tex}
-               {img:annotated_fft_phase_timesync}
-               {Phase differences after sample time offset compensation}
-               {1}
+               {1}{ht}
 \end{subchapter}
 
 \begin{subchapter}{Tuner phase offset compensation}
@@ -197,14 +187,4 @@ order they are performed. \\
 
   The relative phase differences will later be used to
   determine the direction of the incoming signal.
-
-  \figurizefile{diagrams/annotated_fft_phase_comp.tex}
-               {img:annotated_fft_phase_comp}
-               {Completely compensated phase diagram}
-               {1}
-
-  \figurizefile{diagrams/annotated_fft_phase_zoom.tex}
-               {img:annotated_fft_phase_zoom}
-               {Completely compensated phase diagram (zoomed in)}
-               {1}
 \end{subchapter}
