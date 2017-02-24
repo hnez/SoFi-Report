@@ -6,9 +6,26 @@ The components are: \\
 
 - \texttt{backend/sofi} - Performs the sample-exact
 timing offset compensation and the processing steps
-shown in figure \ref{img:preprocessing_chain}.
+shown in figure \ref{img:preprocessing_chain}. \\
+
+- \texttt{frontend/sofi.py} - Performs further preprocessing
+and and calculates direction of arrival estimations. \\
+
+- \texttt{frontend/visualize.grc} - Gnuradio flowchart
+that displays the vectors calculated by the frontend code. \\
 
 \begin{subchapter}{Preprocessing}
+  As the preprocessing code has to deal with samples
+  before the first downsamling stage the data rates to be
+  processed are rather high.
+  In order to be able to run on low-range computing hardware
+  this part is written in the C programming language and
+  uses the highly optimized \texttt{fftw3} and \texttt{volk}
+  libraries, for accelerated FFT and vector operations, respectively. \\
+
+  \begin{lstlisting}[language=C]
+    
+  \end{lstlisting}
 \end{subchapter}
 
 \begin{subchapter}{DOA-estimation}
