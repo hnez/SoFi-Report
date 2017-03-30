@@ -1,22 +1,6 @@
-*.aux
-*.log
-*.out
-*.synctex.gz
-*.tex.orig
-*Report.pdf
-*Report-blx.bib
-*Report.bbl
-*Report.bcf
-*Report.blg
-*Report.run.xml
-*/Report.fdb_latexmk
-*/Report.fls
-*.tex.swp
-*.xcf
-*.DS_Store
-\#*
+/content/latex.out
+/content/Report.pdf
 
-revision.tex
-
-*~
 .~lock.*
+\#*
+*~
