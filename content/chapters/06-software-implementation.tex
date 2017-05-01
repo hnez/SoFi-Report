@@ -1,39 +1,26 @@
-The current implementation consists of three
-programs that are connected using UNIX pipes
-to form a DOA processing chain. \\
+The implementation is split into a part implemented in
+the C programming language that performs basic signal
+processing on the high-throughput input streams and
+a part implemented in python that performs direction estimation
+at a lower speed.
 
-\begin{description}
-  \item[\texttt{backend/sofi}:] Performs the sample-exact
-    timing offset compensation and the processing steps
-    shown in figure \ref{img:preprocessing_chain}.
-
-  \item[\texttt{frontend/sofi.py}:] Performs further preprocessing
-    and and calculates direction of arrival estimations.
-
-  \item[\texttt{frontend/visualize.grc}:] Gnuradio flowchart
-    that displays the vectors calculated by the frontend code.
-\end{description}
-
-\begin{subchapter}{\texttt{backend/sofi}}
+\begin{subchapter}{\texttt{libsofi.c}}
   As the preprocessing code has to deal with samples
   before the first downsamling stage the data rates to be
   processed are rather high.
   In order to be able to run on low-range computing hardware
   this part of the processing chain is written in the C
-  programminglanguage and
+  programming language and
   uses the highly optimized \texttt{fftw3} and \texttt{volk}
   libraries, for accelerated FFT and vector operations. \\
-
-  Listing \ref{lst:pseudo_backend} contains the main source
-  file for the backend code stripped off of all error handling
-  for brevity. \\
 
   The program flow starts off by initializing the SDR
   dongles. The communication with the dongles is performed
   by using a hardware abstraction for software-defined radio
   devices that was introduced into recent versions of
   the Linux kernel. This means that the program should work
-  with all SDR devices supported in the Linux kernel.
+  with all SDR devices supported in the Linux kernel,
+  as long as their clock sources are synchronized.
 
   The actual transfer of samples is performed using
   buffers that are shared between the application and
@@ -43,26 +30,29 @@ to form a DOA processing chain. \\
   FFT calculations are performed in one thread per
   SDR device, distributing the load over the available cores.
 
-  Once the SDR devices are initialized and aquireing samples
-  they are synchronized by calculating calculating the
-  cross-correlation and discarding samples.
+  Once the SDR devices are initialized and acquiring samples
+  they are synchronized by calculating the
+  cross-correlation between the per-device streams
+  and discarding samples until the peak appears at a
+  sample-offset of $0$.
 
   All the operations after the synchronization phase are
   performed in the frequency domain.
-  At this point the processing threads are started that
+  At this point the processing threads, that
   take the time domain samples from the shared buffers and transfer
-  them into the frequency domain.
+  them into the frequency domain, are started.
 
   For every receiver $m$ the FFT calculation yields phase
   and magnitude information for $1024$ frequency bins.
   The values $i_\text{m,n}$ in these frequency bins can not
   be averaged directly as the current signal phase can be
-  influenced by signal modulation. When averaged over
-  a long enough timespan the values would thus cancle out. \\
+  influenced by signal modulation. When these stochastic samples
+  are averaged over a long enough timespan they would thus cancel out. \\
 
   In order to be able to perform the necessary averaging
-  and downsampling the phase differences are calulated prior
-  to the averaging using complex conjugate multiplication.
+  and downsampling, instead of using the absoulte phases
+  directly from the fft, the phase differences between the receivers
+  are calulated prior to the averaging step, using complex conjugate multiplication.
   For four receivers this leads to six difference signals
   that are calulated according to the ecuations seen below.
 
@@ -80,41 +70,51 @@ to form a DOA processing chain. \\
     \end{aligned}
   \end{equation*}
 
-  These values are then averaged and at specified
-  intervals the phases are extracted and passed to
-  the next processing step.
+  These values are then averaged to reduce the sample-rate
+  and forwarded to the next processing steps.
 \end{subchapter}
 
-\begin{subchapter}{\texttt{frontend/sofi.py}}
+\begin{subchapter}{\texttt{libsofi.py}}
   After the downsampling performed in the backend code
   the data rate is greatly reduced, further processing
   can thus be performed in Python, an interpreted scripting
-  language that makes writing DSP task easier
+  language that, in conjunction with numpy, a software library for
+  numeric calulations, makes writing DSP task easier
   than programming in C.
 
-  The frontend code uses the \texttt{numpy} and
+  The data-transfer from C to python is performed using
+  a bit of glue-code that uses the \texttt{ctypes}
+  foreign-function-interface (FFI).
+
+  This glue-code allows the C code to be imported
+  into the python code like a native python module.
+\end{subchapter}
+
+\begin{subchapter}{\texttt{direction.py}}
+  The direction estimation code uses the \texttt{numpy} and
   \texttt{scipy} libraries for easy and efficient
   vector operations and signal processing tasks. \\
 
   This part of the processing chain operates completely
   in the frequency-domain, it is responsible for
   performing the compensation tasks to get from the
-  raw phase diagram seen in Figure \ref{img:annotated_fft_phase_orig}
-  to the fully compensated phase diagram
-  seen in Figure \ref{img:annotated_fft_phase_zoom}
-  and using these phase diagrams to calulate direction informations
+  raw phase diagram, as seen in Figure \ref{img:annotated_fft_phase_orig},
+  to the fully compensated phase diagram,
+  as seen in Figure \ref{img:annotated_fft_phase_zoom}.
+
+  It also uses these phase diagrams to calulate direction informations
   for the signal sources in the spectrum. \\
 
-  The compensation part works by first finding the local minima in
-  the amplitude spectrum seen in figure \ref{img:annotated_fft_mag},
+  The compensation step works by first finding the local minima in
+  the amplitude spectrum, as seen in figure \ref{img:annotated_fft_mag},
   these are the frequencies with the lowest signal strength
-  and can thus be assumed to be mainly noise.
+  and can thus be assumed to be dominated noise.
 
   As discussed before noise carries no direction
   information and the phase difference between the
   receivers should thus be, on average, zero.
 
-  The actual phase differences at the amplitude minima
+  The actually measured phase differences at the amplitude minima
   is used as an error input to PID-controllers that
   are configured to compensate for the per-receiver
   mixer phase offsets and sub-sample acuisition
@@ -123,8 +123,10 @@ to form a DOA processing chain. \\
   After compensation the phase spectrogram looks mostly
   flat with destinct deviations for frequencies
   with strong signals, as can be seen in
-  figure \ref{img:annotated_fft_phase_zoom}.
-\end{subchapter}
+  figure \ref{img:annotated_fft_phase_zoom}. \\
 
-\begin{subchapter}{\texttt{frontend/visualize.grc}}
+  In addition to finding the frequencies that are dominated
+  by noise the program also finds peaks in received power.
+  These peaks correspond to the center frequencies of the currently active
+  transmitters.
 \end{subchapter}
