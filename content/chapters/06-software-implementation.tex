@@ -1,7 +1,7 @@
 The implementation is split into a part implemented in
-the C programming language that performs basic signal
-processing on the high-throughput input streams and
-a part implemented in python that performs direction estimation
+the C programming language, that performs basic signal
+processing on the high-throughput input streams, and
+a part implemented in Python that performs direction estimation
 at a lower speed.
 
 \begin{subchapter}{\texttt{libsofi.c}}
@@ -16,7 +16,7 @@ at a lower speed.
 
   The program flow starts off by initializing the SDR
   dongles. The communication with the dongles is performed
-  by using a hardware abstraction for software-defined radio
+  by using a hardware abstraction layer for software-defined radio
   devices that was introduced into recent versions of
   the Linux kernel. This means that the program should work
   with all SDR devices supported in the Linux kernel,
@@ -46,12 +46,13 @@ at a lower speed.
   and magnitude information for $1024$ frequency bins.
   The values $i_\text{m,n}$ in these frequency bins can not
   be averaged directly as the current signal phase can be
-  influenced by signal modulation. When these stochastic samples
-  are averaged over a long enough timespan they would thus cancel out. \\
+  influenced by signal modulation and thus behaves randomly.
+  When these stochastic samples are averaged over a sufficiently long
+  timespan they would thus cancel out. \\
 
   In order to be able to perform the necessary averaging
   and downsampling, instead of using the absoulte phases
-  directly from the fft, the phase differences between the receivers
+  directly from the FFT, the phase differences between the receivers
   are calulated prior to the averaging step, using complex conjugate multiplication.
   For four receivers this leads to six difference signals
   that are calulated according to the ecuations seen below.
@@ -82,12 +83,12 @@ at a lower speed.
   numeric calulations, makes writing DSP task easier
   than programming in C.
 
-  The data-transfer from C to python is performed using
+  The data-transfer from C to Python is performed using
   a bit of glue-code that uses the \texttt{ctypes}
   foreign-function-interface (FFI).
 
   This glue-code allows the C code to be imported
-  into the python code like a native python module.
+  into the Python code just like a native Python module.
 \end{subchapter}
 
 \begin{subchapter}{\texttt{direction.py}}
@@ -118,7 +119,10 @@ at a lower speed.
   is used as an error input to PID-controllers that
   are configured to compensate for the per-receiver
   mixer phase offsets and sub-sample acuisition
-  time differences. \\
+  time differences.
+  The controllers constantly optimize the compensation
+  parameters to zero out the phase differences at the
+  amplitude minima. \\
 
   After compensation the phase spectrogram looks mostly
   flat with destinct deviations for frequencies
@@ -129,4 +133,51 @@ at a lower speed.
   by noise the program also finds peaks in received power.
   These peaks correspond to the center frequencies of the currently active
   transmitters.
+  These frequencies are then added to a list of sources to be
+  analyzed. \\
+
+  As the direction estimation model depends on the
+  signal wavelength the programs goes through each of
+  these frequencies and generates a modeling matrix. \\
+
+  The code that generates these matrices can be seen in
+  listing \ref{lst:direction_model}.
+  The code creates a vector consisting of possible input
+  angles (from $-\pi$ to $\pi$ in radians)
+  and calculates the expected phase difference for each
+  antenna pair based on the antenna pair orientation,
+  distance, input angle and signal wavelength.
+
+  \begin{lstlisting}[language=Python, frame=single,
+      numbers=left, label={lst:direction_model},
+      caption={Code fragment that calculates the receiver model}]
+    rel_wl= 2 * math.pi * edge_distances / wavelength
+    test_angles= np.linspace(-math.pi, math.pi, self.dir_len)
+
+    for (idx, test_angle) in enumerate(test_angles):
+        rel_angles= edge_angles + test_angle
+        pos_mat[idx, :]= rel_wl * np.sin(rel_angles)
+  \end{lstlisting}
+
+  Performing a matrix-vector multiplication of this modeling matrix
+  and a vector consisting of the measured phase differences
+  is equivalent to calculating the scalar dot product of the
+  modeled phase difference vector and the actually measured
+  phase difference vector for every input angle. \\
+
+  As the scalar dot product yields its largest result
+  when both vectors are in parallel and its smallest
+  result when both vectors are anti-parallel the
+  matrix-vector multiplication yields a vector where
+  the position of the largest value corresponds to the
+  angle of incidence of the signal.
+\end{subchapter}
+
+\begin{subchapter}{\texttt{sofi\_ui.py}}
+  The Displaying of the direction estimation is performed
+  using the \texttt{matplotlib} and \texttt{Gtk+} software-libraries.
+
+  Figure \ref{img:sofi_ui} shows the SoFi interface.
+  The bottom half displays the amplitude spectrum and
+  the top half displays the direction estimation data. \\
 \end{subchapter}

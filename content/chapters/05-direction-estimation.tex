@@ -7,12 +7,12 @@
   The diagram shows four antennas spaced out on a plane
   and a stilized wave that is received by all four of them.
   The source of the wave is assumed to be so far away that
-  the rays are approximately parallel when they reach the receivers. \\
+  the signal-rays are approximately parallel when they reach the receivers. \\
 
   In the depicted constellation the signal has to travel the
   same distance to reach the receivers $A$ and $B$, thus the
   phase at those receivers is the same.
-  On the other hand the signal hat to travel further to reach
+  On the other hand the signal has to travel further to reach
   receiver $D$ that to reach $A$, the difference in phase can
   be directly calculated from the wavelength of the signal and
   the distance between the antennas.
@@ -61,9 +61,10 @@
   This means, that in the presence of noise the measured phase differences
   will always be smaller than those assumed in figure \ref{img:angle_two_receivers}
   by a factor $f$.
-  Luckyly the effect of the noise can be assumed to be the same for
-  all antenna pairs and thus the factor $f$ can also be assumed to be the same. \\
+  Luckyly the effect of the noise can be assumed to be equal for
+  all antenna pairs and thus the factor $f$ can also be assumed to be equal. \\
 
-  Thus the algorithm used should be able to work relative phases that are
-  scaled by a constant value.
+  Thus the algorithm used for direction estimation
+  should be able to work relative phases that are
+  scaled by a constant noise factor.
 \end{subchapter}

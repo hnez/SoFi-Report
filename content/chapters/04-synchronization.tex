@@ -1,5 +1,5 @@
-In addition to frequency locking that is performed in
-hardware additional synchronization steps have to
+In addition to frequency locking, that is performed in
+hardware, additional synchronization steps have to
 be performed. These steps are now presented in the
 order they are performed. \\
 
@@ -12,21 +12,21 @@ order they are performed. \\
 
   The first figure \ref{img:samples_actual_time} shows the
   times at which samples were taken and put into the
-  sample buffer of the corresponding receiver along
+  sample-buffer of the corresponding receiver along
   with their index in the sample buffer.
   In a more realisitic diagram the differences between the
   times at which the first samples are taken would be
   a lot bigger compared to the sampling rate as the
   differences in startup time are usually in the range
   of hundreds of milliseconds and the sampling rates are
-  of the order of a couple kiloherz to a few megaherz.
+  in the order of a couple kiloherz to a few megaherz.
 
   \figurizefile{diagrams/samples_actual_time.tex}
                {img:samples_actual_time}
                {Samples and the actual time they were taken}
                {0.5}{ht}
 
-  Upon reading the samples from the device buffers
+  Upon reading the samples from the device-buffers
   the information about the absolute aquisition time is
   lost. To a program reading the ADC data the
   samples thus look like in figure \ref{img:samples_observed_time}.
@@ -40,8 +40,8 @@ order they are performed. \\
   the signals later on they have to be synchronized to
   a accuracy of a couple sampling times.
   In figure \ref{img:samples_synchronized_time} all
-  samles that where recorded before all ADC where aquiring
-  data are discarded and the input streams are
+  samles, that where recorded before all ADC where aquiring
+  data, are discarded and the input streams are
   synchronized to within one sampling time.
 
   \figurizefile{diagrams/samples_synchronized_time.tex}
@@ -147,18 +147,18 @@ order they are performed. \\
   of antennas in the array, $n_\text{ant}$ input
   signals are mapped to $\left(n_\text{ant}-1\right)!$
   output signals.
-  In all the measurements taken four antennas are used
-  that produce six difference signals. \\
+  The setup that is analyzed in this thesis uses
+  four antennas that produce six difference signal-streams. \\
 
   In figure \ref{img:annotated_fft_mag} the mean
   absolute values of the resulting complex output
   vectors can be seen. The peaks in the diagram indicate
-  the presence of a sender at that frequency.
+  the presence of a transmitter at that frequency.
 
   Figure \ref{img:annotated_fft_phase_orig} shows the phases
   of the six complex output vectors. When correlating the
   diagram with figure \ref{img:annotated_fft_mag} one can already
-  see some bumps in the phase differences where there are strong senders. \\
+  see some bumps in the phase differences where there are strong transmitters. \\
 
   One can also see a rather steep sloping of the phases,
   this is due to the sub-sample timing offsets between the
@@ -181,7 +181,7 @@ order they are performed. \\
   Figure \ref{img:annotated_fft_phase_comp} shows the phases
   after compensating for those offsets. Frequency ranges where
   the noise is dominant show no phase differences between
-  the receivers, while ranges with active senders contain
+  the receivers, while ranges with active transmitters contain
   visible bumps. When zoomed in like in figure \ref{img:annotated_fft_phase_zoom}
   these bumps become a lot more prominent. \\
 

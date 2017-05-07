@@ -21,11 +21,11 @@ differences is expected to yield better results. \\
 The system that is presented uses Software-defined radio
 technology and fourier transformation to calculate DOA
 information for all signals present in a given frequency range.
-This is a stark contrast to common algorithms like
-MUSIC that use a cross-correlation Matrix as first
-processing step and are thereby limited to analyzing
-a frequency range that contains fewer signals than there
-are receivers. \\
+This is a deviation from the more common approach
+used in algorithms like MUSIC that use a
+cross-correlation Matrix as first processing step and are
+thereby limited to analyzing a frequency range that contains
+fewer signals than there are receivers. \\
 
 Using multiple cheap, independent receivers also
 has some drawbacks that have to be overcome like
@@ -33,3 +33,5 @@ different LO frequencies and differences in sampling
 time. Solutions to these problems were partly implemented
 by modifying the hardware and partly by compensation
 in software.
+These synchronization techniques will be discussed
+in the first few chapters of this thesis.

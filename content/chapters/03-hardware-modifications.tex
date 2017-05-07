@@ -17,35 +17,36 @@ The tuner uses this frequency to derive the
 local oscillator signal used for mixing down
 the RF-signal using a phase locked loop.
 It also provides a clock output pin that
-outputs a triangle waveform at the crystal
-frequency. \\
+outputs a triangle waveform at the crystals
+resonant frequency. \\
 
-The given USB-dongles uses this clock output
-as an input for the \texttt{RTL2832U}
+The given USB-dongles uses this clock output signal
+as a clock input for the \texttt{RTL2832U}
 receiver IC that handles the analog to digital
 conversion and USB-communication.
-The ADC sampling frequency is derived from
+The ADC sampling frequency is also derived from
 the tuner clock output by using a phase locked loop. \\
 
 In the basic setup four SDR dongles are used
 to operate the antenna array.
 In order to be able to compare the signal phases
 received by these dongles they have to be tightly
-synchronized in time and frequency. \\
+synchronized in sample-aquisition time and frequency. \\
 
 Gaining sufficient synchronization for DOA applications
 by compensating for hardware differences completely
-in software was deemed not feasible so a hybrid
+in software was deemed unfeasible, so a hybrid
 approach was choosen that requires minimal hardware
-modifications. \\
+modifications and offloads most synchronization tasks
+to the software side. \\
 
 % TODO: Cite the guy that synchronized RTL-SDRs for
 %       radar stuff
 
 Figure \ref{img:block_sdr_dongle_chained} shows
 a schematic representation of the performed modifications.
-The clock output of one tuner ic is daisy chained to
-the clock input of the next tuner ic.
+The clock output of one tuner IC is daisy chained to
+the clock input of the next tuner IC.
 This way all tuners derive their clock frequency
 from the same crystal while the load on any of
 the clock outputs is kept minimal.
@@ -69,7 +70,7 @@ with thin wires that tap off the clock out signal
 and a ground reference. \\
 
 The next image to the right shows a dongle
-that comes later in the clock chain.
+in a position in the clock distribution chain.
 The original crystal was removed an replaced with
 the RC-network shown in figure \ref{img:block_sdr_dongle_chained}.
 The network is fed by the previos dongle in the chain. \\
