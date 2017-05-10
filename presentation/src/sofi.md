@@ -315,6 +315,19 @@ Conclusion
 
 TODO
 
+---
+
+The software sources are released under the GNU GPLv3 license:
+
+[github.com/hnez/SoFi](https://github.com/hnez/SoFi)
+
+<div style="border-top: 1px solid rgba(255, 255, 255, 0.17); margin-top: 1em; padding-top: 1em;"></div>
+
+The thesis and this presentation are released under the GNU FDLv1.3:
+
+[github.com/hnez/SoFi-Report](https://github.com/hnez/SoFi-Report)
+
+
 [code_cross_correlate]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/libsofi/synchronize.c#L130
 [code_discard_samples]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/libsofi/synchronize.c#L184
 [code_correlation_len]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/libsofi/libsofi.c#L108
