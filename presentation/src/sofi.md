@@ -8,12 +8,12 @@ using commodity hardware
 
 ---
 
-_idea_
+_concept_
 
 ---
 
-Idea
-====
+Concept
+=======
 
 ![FFT Phase differences](diagrams/annotated_fft_phase_zoom.svg)
 
@@ -43,18 +43,17 @@ Get a few SDRs
 
 ---
 
-RTL SDR
-=======
+_RTL SDR:_
 
 ![Open SDR](images/sdr_open.jpg)
 
 - DVB-T sticks containing a Realtek 2832U DVB-T Decoder IC
-- Bundled Windows software contained a feature to listen to FM-Radio
-- Linux developers wanted to add support for FM to their driver
+- Bundled Windows software contains a feature to listen to FM-Radio
+- Linux developers wanted to add FM-Radio support to their driver
 - Noticed, that the chip did not contain a FM Tuner but passed raw
   IQ-Samples to the computer instead and can be tuned to a wide
   range of frequencies
-- Started an SDR "revolution"
+- Started an "SDR revolution" as prices start at just 10€/dongle
 
 ---
 
@@ -67,9 +66,9 @@ _synchronize them_
 Synchronize them
 ================
 
-![SDR Clocks Original](diagrams/sdr_clocks.svg)
-
 _Problem:_
+
+![SDR Clocks Original](diagrams/sdr_clocks.svg)
 
 - Receivers are built down to a prize
 - Clock crystal frequencies deviate due to various factors
@@ -82,9 +81,9 @@ _Problem:_
 Synchronize them
 ================
 
-![SDR Clocks Chained](diagrams/sdr_clocks_chained.svg)
-
 _Solution:_
+
+![SDR Clocks Chained](diagrams/sdr_clocks_chained.svg)
 
 - Feed the receivers from a single clock source
 - All the frequencies are derived from this clock using
@@ -280,6 +279,41 @@ this makes calculating the direction a bit more difficult
 ---
 
 _implementation_
+
+---
+
+Implementation
+==============
+
+Split into two parts:
+
+- Fast multithreaded C-backend
+    - Talks to the SDRs using the V4L Linux kernel API
+    - Performs sample-accurate synchronization
+    - Calculates phase differences from FFT
+    - Downsamples
+- Slow Python-frontend
+    - Performs offset compensations
+    - Calculates direction info
+    - Displays a GUI
+
+---
+
+Implementation
+==============
+
+TODO
+
+---
+
+_conclusion_
+
+---
+
+Conclusion
+==========
+
+TODO
 
 [code_cross_correlate]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/libsofi/synchronize.c#L130
 [code_discard_samples]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/libsofi/synchronize.c#L184
