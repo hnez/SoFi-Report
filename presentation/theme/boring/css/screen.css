@@ -54,6 +54,13 @@ li li {
 }
 
 img, video {
+    border-radius: 0.5em;
+    box-shadow: 0 0 1em black;
+    background-color: white;
+
+    margin-left: -0.1em;
+    padding: 0.1em;
+    
     height: 9em;
     max-width: 100%;
 }
