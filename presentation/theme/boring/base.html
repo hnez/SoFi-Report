@@ -1,0 +1,71 @@
+{#
+    To the extent possible under law, Leonard Göhrs
+  has waived all copyright and related or neighboring
+             rights to boring-landslide.
+
+         This work is published from: Germany.
+#}
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ head_title }}</title>
+
+    <script>
+      var lastSlide= {{ num_slides }};
+    </script>
+
+    {% if embed %}
+    <style type="text/css" media="screen,projection">
+      {{ css.screen.contents }}
+    </style>
+    <style type="text/css" media="print">
+      {{ css.print.contents }}
+    </style>
+    <script>
+      {{ js.contents}}
+    </script>
+    {% else %}
+    <link rel="stylesheet" type="text/css"
+          media="screen,projection" href="{{ css.screen.path_url}}"></link>
+    <link rel="stylesheet" type="text/css"
+          media="print" href="{{ css.print.path_url}}"></link>
+    <script type="text/javascript" src="{{ js.path_url }}"></script>
+    {% endif %}
+  </head>
+
+  <body onload="install()">
+    {% for slide in slides %}
+    <div class="slidebox" id="slide_{{ slide.number }}">
+      {% if slide.header %}
+      <header>
+        {{ slide.header }}
+      </header>
+      {% endif %}
+
+      {% if slide.content %}
+      <section>
+        {{ slide.content }}
+      </section>
+      {% endif %}
+
+      <footer>
+        <aside class="slidenum">
+          {{ slide.number }}/{{ num_slides }}
+          {% if num_slides|int > 1 %}
+          {% if slide.number > 1 %}
+          <a href="#slide_{{ slide.number - 1 }}">▲</a>
+          {% endif %}
+
+          <a href="#slide_{{ slide.number }}">●</a>
+
+          {% if num_slides|int  > slide.number %}
+          <a href="#slide_{{ slide.number + 1 }}">▼</a>
+          {% endif %}
+          {% endif %}
+        </aside>
+      </footer>
+    </div>
+    {% endfor %}
+  </body>
+</html>

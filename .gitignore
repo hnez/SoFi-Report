@@ -1,6 +1,11 @@
 /print/latex.out
 /print/Report.pdf
 
+/presentation/target/sync.sh
+/presentation/target/theme
+/presentation/target/*.html
+/presentation/target/*.pdf
+
 .~lock.*
 \#*
 *~

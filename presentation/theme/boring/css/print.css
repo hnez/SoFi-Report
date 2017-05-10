@@ -1,0 +1,112 @@
+/*
+ *   To the extent possible under law, Leonard Göhrs
+ *  has waived all copyright and related or neighboring
+ *            rights to boring-landslide.
+ *
+ *        This work is published from: Germany.
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 75%;
+    margin: 0 auto;
+    padding:
+}
+
+h1, h2 {
+    text-align: center;
+    color: rgb(90, 90, 90);
+}
+
+p {
+    text-align: center;
+    margin: 0.5em 0;
+}
+
+ul, ol {
+    margin: 0.1cm 1cm;
+}
+
+li {
+    list-style-type: circle;
+}
+
+img {
+    max-width: 100%;
+}
+
+.slidebox header {
+    margin: 0 auto;
+
+    width: 70%;
+    text-align: center;
+
+    border-bottom: 0.5mm solid #00456B;
+
+    margin-top: 0.7em;
+    margin-bottom: 3em;
+}
+
+.slidebox {
+    position: relative;
+    min-height: 6cm;
+    page-break-inside: avoid;
+
+    padding-bottom: 1cm;
+}
+
+.slidenum {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    color: rgb(50, 50, 50);
+
+    letter-spacing: 0.1em;
+
+    border-bottom: 0.5mm solid #00456B;
+}
+
+.slidenum a {
+    display: none;
+}
+
+.highlight {
+    border: 0.5mm solid rgb(0, 37, 57);
+    border-radius: 1mm;
+    margin: 3vh 0;
+
+    width: 60%;
+    margin: 5mm auto;
+}
+
+.highlight .lineno {
+    background-color: #D4D4D4;
+    border-right: 0.5mm solid rgb(0, 37, 57);
+
+    margin-right: 0.5em;
+    padding-left: 0.2em;
+}
+
+.highlight .cp {
+    color: RGB(58, 167, 227);
+}
+
+.highlight .cpf {
+    color: RGB(161, 206, 76);
+}
+
+.highlight .kt,
+.highlight .k {
+    color: RGB(53, 164, 225);
+}
+
+.highlight .s,
+.highlight .s1,
+.highlight .s2 {
+    color: RGB(227, 177, 58);
+}
