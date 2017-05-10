@@ -6,6 +6,9 @@
 /presentation/target/*.html
 /presentation/target/*.pdf
 
+/presentation/target/diagrams/*.pdf
+/presentation/target/diagrams/latex.out
+
 .~lock.*
 \#*
 *~
