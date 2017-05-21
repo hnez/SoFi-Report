@@ -1,3 +1,14 @@
+
+% Original MUSIC paper
+@article{schmidt1979,
+  author = {Ralph O. Schmidt},
+  journal = {IEEE Transactions on Acoustics, Speech, and Signal Processing},
+  title = {Multiple Emitter Location and Signal Parameter Estimation},
+  year = {1979},
+  volume = {37}
+}
+
+% In depth MUSIC
 @article{vibergottersten1991,
   author = {M. Viberg and B. Ottersten},
   journal = {IEEE Transactions on Signal Processing},
@@ -8,11 +19,12 @@
   pages = {1110-1121},
   doi = {10.1109/78.80966},
   ISSN = {1053-587X},
-  month = {May},
+  month = {5},
   url = {http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=80966},
 }
 
-@article{paulrajkailath1985
+% MUSIC with unsynchronized receivers
+@article{paulrajkailath1985,
   author = {A. Paulraj and T. Kailath},
   booktitle = {ICASSP '85. IEEE International Conference on Acoustics, Speech, and Signal Processing},
   title = {Direction of arrival estimation by eigenstructure methods with unknown sensor gain and phase},
@@ -20,7 +32,7 @@
   volume = {10},
   pages = {640-643},
   doi = {10.1109/ICASSP.1985.1168341},
-  month = {Apr}
+  month = {4},
   url = {http://ieeexplore.ieee.org/abstract/document/1168341/}
 }
 
@@ -58,14 +70,29 @@
   year = {2012},
 }
 
+% p325 - Primary component analysis
+@book{bronstein2016,
+  author = {I.N. Bronstein, K.A. Semendjajew},
+  isbn = {978-3-8085-5789-1},
+  publisher = {Europa Lehrmittel},
+  title = {Taschenbuch der Mathematik},
+  year = {2016}
+}
+
+% "Simplified" introduction to MUSIC
 @techreport{girdmusic,
   title = {An Introduction to MUSIC and ESPRIT},
   url = {http://www.girdsystems.com/pdf/GIRD_Systems_Intro_to_MUSIC_ESPRIT.pdf},
   institution = {GIRD Systems, Inc.}
 }
 
-@misc{rtlcoherent
-  title = {rtl_coherent: Synchronized RTL-SDR receivers and direction finding}
-  author = {tejeez}
+% Actually working implementation of the same methods used in SoFi
+@misc{rtlcoherent,
+  title = {rtl\_coherent, Synchronized RTL-SDR receivers and direction finding},
+  author = {Github user tejeez},
   url = {https://github.com/tejeez/rtl_coherent}
+}
+
+@misc{wikicorrelation,
+  url = {https://de.wikipedia.org/wiki/Korrelationsmatrix}
 }
