@@ -1,4 +1,4 @@
-Direction of arrival estimation of RF-Signals
+Direction of arrival estimation of \acrshort{rf}-Signals
 works by analyzing the signals received by
 multiple antennas distributed in space.
 
@@ -14,24 +14,168 @@ at the receiving antennas.
 For systems where the distance between
 the sender and the receiving antennas is much
 smaller than the distance between the receiving
-antennas the difference in signal strength
+antennas, the difference in signal strength
 are usually very small and using the phase
-differences is expected to yield better results. \\
+differences provides better accuracy. \\
 
-The system that is presented uses Software-defined radio
-technology and fourier transformation to calculate DOA
+The system implemented in this thesis will use \gls{sdr}
+technology and fourier transformation to calculate \gls{doa}
 information for all signals present in a given frequency range.
-This is a deviation from the more common approach
-used in algorithms like MUSIC that use a
-cross-correlation Matrix as first processing step and are
-thereby limited to analyzing a frequency range that contains
-fewer signals than there are receivers. \\
+More sophisticated algorithms like \acrshort{music} employ
+a cross-correlation Matrix as an early processing step,
+allowing for better separation of signals and noise
+but also limiting the number of signals analyzed at
+a time to one fewer than the number of receivers. \\
 
-Using multiple cheap, independent receivers also
-has some drawbacks that have to be overcome like
-different LO frequencies and differences in sampling
-time. Solutions to these problems were partly implemented
-by modifying the hardware and partly by compensation
-in software.
-These synchronization techniques will be discussed
-in the first few chapters of this thesis.
+Using multiple cheap, independent receivers instead
+of purpose-built hardware also poses some challenges
+that have to be overcome and will be discussed in
+this thesis, like different LO frequencies and differences
+in sampling time.
+
+\begin{subchapter}{\gls{doa} estimation}
+  Figure \ref{img:phased_array} visualizes how signal phases
+  can be used to estimate the \acrlong{doa} of a signal
+  in the far field. \\
+
+  The diagram shows four antennas spaced out on a plane
+  and a stilized wave that is received by all four of them.
+  The source of the wave is assumed to be so far away that
+  the signal-rays are approximately parallel when
+  they reach the receivers. \\
+
+  In the depicted constellation the signal has to travel the
+  same distance to reach the receivers $A$ and $B$, thus the
+  phases at those receivers are the same.
+  On the other hand the signal has to travel further to reach
+  receiver $D$ that to reach $A$, the difference in phase can
+  be directly calculated from the wavelength of the signal and
+  the distance between the antennas.
+
+  \begin{equation*}
+    \Delta \varphi =  2 \pi \cdot \frac{d_\text{AD}}{\lambda}
+  \end{equation*}
+
+  \figurizefile{diagrams/phased_array.tex}
+               {img:phased_array}
+               {Array of four antennas with a sender to the far right}
+               {0.7}{ht}
+
+  In a more realistic scenario the the signals will reach the
+  receivers at odd angles. Figure \ref{img:angle_two_receivers}
+  shows an example where a signal reaches the receivers at an
+  angle of $\alpha=\SI{45}{\degree}$. The length that can be calculated
+  from the phase difference $\Delta \varphi$ between the receivers and
+  the wavelength $\lambda$ of the signal is marked as $\Delta l$.
+
+  The direction of arrival $\alpha$ can then be calculated from
+  those lengths using equation \ref{eq:doa_trigonometry}.
+
+  \begin{equation}
+    \label{eq:doa_trigonometry}
+    \alpha
+    = \arccos \left( \frac{\Delta l}{d} \right)
+    = \arccos \left( \frac{\Delta \varphi \cdot \lambda}{2 \pi d} \right)
+  \end{equation}
+
+  \figurizefile{diagrams/angle_two_receivers.tex}
+               {img:angle_two_receivers}
+               {Signal arriving at an angle of \SI{45}{\degree}}
+               {0.7}{ht}
+\end{subchapter}
+
+\begin{subchapter}{The effect of noise}
+  There is however a mayor drawback to the DOA-estimation
+  technique discussed above: it does not work in the presence of noise. \\
+
+  This is because noise can be assumed to have no distinct source.
+  If one were to inspect the signal phases in a system modeled after
+  the block diagram in figure \ref{img:preprocessing_chain} before
+  the averaging step, one would find that they look indeed quite random
+  as to be expected from noise.
+  But upon averaging the effects of the noise cancel out as can be seen in figure
+  \ref{img:annotated_fft_phase_zoom} where the phases for frequencies
+  without a strong signal are very close to zero. \\
+
+  This means, that in the presence of noise the measured phase differences
+  will always be smaller than those assumed in figure \ref{img:angle_two_receivers}
+  by a factor $f$.
+  Luckyly the effect of the noise can be assumed to be equal for
+  all antenna pairs and thus the factor $f$ can also be assumed to be equal. \\
+
+  Thus the algorithm used for direction estimation
+  should be able to work relative with phases that are
+  scaled by a common noise factor.
+\end{subchapter}
+
+% TODO: rip doa algorithm from software implementation
+%       chapter and put it here
+
+\begin{subchapter}{Receiver offsets: frequency}
+  \Gls{sdr} devices are commonly structured as seen in
+  figure \ref{img:block_sdr_dongle}, the antenna signal
+  $S_\text{in}$ is first amplified by a factor of
+  $A_\text{lna}$ by an \acrshort{lna} and then mixed
+  down using an \acrshort{iqsig} - \acrshort{losig} signal
+  $S_\text{lo}$ to form a complex baseband signal
+  $S_\text{bb}$. \\
+
+  \begin{equation}
+    \label{eq:lomixer}
+    S_\text{bb}
+    = S_\text{in} \cdot A_\text{lna} \cdot
+      \left( S_\text{lo,i} + i S_\text{lo,q} \right)
+    = S_\text{in} \cdot A_\text{lna} \cdot
+      e^{i \cdot \left( 2 \pi f_\text{lo} t + \varphi_\text{lo} \right)}
+  \end{equation}
+
+  To an user of an \gls{sdr} device the actual waveform
+  of the \gls{losig} is usually irrelevant and it can be
+  modelled as a complex sinusiod of frequency $f_\text{lo}$
+  and phase $\varphi_\text{lo}$, as seen in equation \ref{eq:lomixer}. \\
+
+  As discussed earlier \gls{doa} estimation uses the phase
+  differences between signals received at different receivers
+  to analyze the difference in signal runtime.
+
+  A phase difference between two complex signals can be
+  calculated using complex conjugate multiplication as
+  shown in \ref{eq:ccmphdiff}.
+
+  \begin{align}
+    \label{eq:ccmphdiff}
+    A \cdot e^{i \cdot \Delta \varphi}
+    &= S_\text{bb,1} \cdot S_\text{bb,2}^\ast \\
+    &= S_\text{in,1} \cdot
+       e^{i \cdot \left( 2 \pi f_\text{lo,1} t + \varphi_\text{lo,1} \right)}
+       \cdot
+       S_\text{in,2}^\ast \cdot
+       e^{-i \cdot \left( 2 \pi f_\text{lo,2} t + \varphi_\text{lo,2} \right)} \nonumber \\
+    &= S_\text{in,1} \cdot S_\text{in,2}^\ast \cdot
+       e^{i \cdot \left(
+         2 \pi (f_\text{lo,1} - f_\text{lo,2}) t
+         + \varphi_\text{lo,1} - \varphi_\text{lo,2}
+       \right)} \nonumber \\
+    \label{eq:ccmpoff}
+    &= S_\text{in,1} \cdot S_\text{in,2}^\ast \cdot
+       e^{i \cdot \left(
+         2 \pi \Delta f_\text{lo} t
+         + \Delta \varphi_\text{lo}
+       \right)}
+    % Convoluted equations in latex?
+    % Still a better read than twilight
+  \end{align}
+
+  If the two signals are baseband signals that
+  were downconverted using two \gls{losig} signals
+  with respective frequencies of $f_\text{lo,1}$ and
+  $f_\text{lo,2}$ and phases of $\varphi_\text{lo,1}$
+  and $\varphi_\text{lo,2}$ the difference between
+  these frequencies and phases will also be present
+  in the resulting phase difference $\Delta \varphi$. \\
+
+  In order to get the actual phase difference between
+  the two input signals $S_\text{in,1}$ and $S_\text{in,2}$
+  the \gls{losig} frequencies and phases have to be
+  locked ($\Delta f_\text{lo} = 0$, $\Delta \varphi_\text{lo} = 0$).
+\end{subchapter}
