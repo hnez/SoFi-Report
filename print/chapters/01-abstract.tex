@@ -1,8 +1,26 @@
-A mostly software based solution for direction of arrival
-estimation of RF-Signals is presented that relies on
-cheap and easily optainable hardware components.
+This thesis aims to explore if a low-cost \gls{doa} estimation
+system can be implemented by utilizing commodity \gls{sdr} hardware
+and background noise that is common to the different receivers as
+a means of time-domain synchronization. \\
 
-By utilizing Software-defined radio technology embedded
-in widely available DVB-T USB dongles a direction of arrival
-rig can be built for less than 50€, that utilizes Desktop-grade
-computer hardware for signal processing and displaying.
+The measurement rig is intended to measure the angle of incident
+of FM-Radio signals which should, assuming known broadcasting-tower
+locations allow estimations of the current receiver location on
+a 2D-plane. \\
+
+The rig utilizes DVB-T USB donles that where discovered \cite{rtlhistory}
+to contain a feature to pass raw I/Q \acrshort{adc} samples
+to the host computer, making it a receive-only \gls{sdr}. \\
+
+Most \gls{doa} algorithms require tight synchronization between
+the receiving units in time and frequency. To meet these requirements
+\gls{doa} rigs usually employ custom hardware and/or a dedicated
+reference signal source. \\
+
+To explore the minimal requirements for a sucessful synchronization
+the build at hand uses only minimal hardware modifications
+to lock the receiver frequencies to prevent phase drifting. \\
+
+The approach also does not use a dedicated reference signal
+for timing synchronization but instead relies on correlations
+in the noise-floor of the receivers.
