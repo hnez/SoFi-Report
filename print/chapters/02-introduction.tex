@@ -108,6 +108,9 @@ in sampling time.
   scaled by a common noise factor.
 \end{subchapter}
 
+\begin{subchapter}{Basic direction estimation}
+\end{subchapter}
+
 \begin{subchapter}{Receiver offsets: frequency}
   \Gls{sdr} devices are commonly structured as seen in
   figure \ref{img:block_sdr_dongle}, the antenna signal
@@ -300,10 +303,6 @@ in sampling time.
   maxmimum correlation between the input signals.
 \end{subchapter}
 
-\begin{subchapter}{Basic direction estimation}
-
-\end{subchapter}
-
 \begin{subchapter}{\acrshort{music}}
   There are also a number of more sophisticated algorithms
   that provide better direction estimation results, be it
@@ -422,13 +421,13 @@ in sampling time.
     are the eigenvalues of $\bm{R}$ and $\bm{U}$
     consists of its normalized eigenvectors.
     $\bm{D}$ and $\bm{U}$ should be sorted in a way,
-    that the eigenvalues are sorted in descending order. \\
+    that the eigenvalues are descending in value. \\
 
     For a number of signals $I$ smaller than the
     number of receivers $N$, the first $I$ eigenvalues
     will correspond to the signal strengths of the signals
-    and the remaining $N - I$ will be small as they
-    mostly correspond to the correlation of the noise. \\
+    and the remaining $N - I$ eigenvalues will be small as they
+    correspond to the correlation of the noise. \\
 
     This means, that as long as the number of signals is
     known and smaller than the number of receivers the
@@ -438,9 +437,41 @@ in sampling time.
 
     MUSIC uses informations from the noise-subspace to extract
     DOA informations \cite{madisetti2010}, other algorithms
-    like e.g. ESPRIT use the signal-subspace for DOA-estimation.
+    like e.g. ESPRIT use the signal-subspace for DOA-estimation. \\
 
-    % TODO: continue describing orthogonality
+    To extract direction information from the noise-eigenvectors
+    a test steering-vector $\vec{a_{t}}(\theta)$ that contains
+    the expected phase-shifts based on the direction of incidence
+    $\theta$ and the array geometry is constructed.
 
+    To calculate the \gls{music} estimation of the signal strength from
+    this direction $\theta$ the evaluation function \ref{eq:musicev}
+    is used \cite[p. 12]{girdmusic} where $U_{n}$ is the $n$th
+    (noise-)eigenvector of $R$.
+
+    \begin{equation}
+      \label{eq:musicev}
+      P(\theta)= \frac{1}{
+        \sum_{n=0}^{N-I} \left( \vec{a_{t}}(\theta) \cdot U_{n} \right)^2
+      }
+    \end{equation}
+
+    The results of this evaluation function over the direction
+    of incidence $\theta$ form a ``spatial spectrum'', that exhibits
+    peaks for directions where a signal is impinging on the array. \\
+
+    This estimation works by exploiting the orthogonality of the
+    eigenvectors of $R$ as it implies, that the space spanned by
+    the signal eigenvectors has to be orthogonal to the space spanned
+    by the noise eigenvectors.
+    Thus the scalar dot product of the steering vector $\vec{a_{t}}(\theta)$
+    and a noise eigenvector $U_{n}$ will be minimal if
+    $\vec{a_{t}}(\theta)$ is in the space spanned by the signal
+    eigenvectors. \\
+
+    The evaluation function calculates the dot product for every
+    noise eigenvector and returns the inverse so that a
+    $\vec{a_{t}}(\theta)$ in the signal subspace yields a large
+    result.
   \end{subsubchapter}
 \end{subchapter}
