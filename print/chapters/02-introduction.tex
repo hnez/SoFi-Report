@@ -129,18 +129,18 @@ in sampling time.
 
   One example where these assumtions do not hold is
   \acrshort{umts}, where transmitters are not completely
-  separable only by frequency and where there the locations
-  of active transmitters might change quickly due
-  to time-sharing. \\
+  separable by frequency due to code multiplexing and
+  where there the locations of active transmitters
+  might change quickly due to time-sharing. \\
 
   The algorithm used in this thesis operates completely
   in the frequency domain, so the time-domain \gls{sdr}
-  samples are fourier-transformed before being processed
-  further using an \gls{fft}.
+  samples are fourier-transformed, prior to the \gls{doa}
+  estimation, using an \gls{fft}.
   The \gls{fft} decomposes the signal into a pre-defined
   number of frequency bins. \\
 
-  The same signal, received at different receivers will
+  The same signal, received at different receivers, will
   be, according to its frequency, sorted into the same
   frequency bin in its respective \gls{fft}.
 
@@ -153,7 +153,8 @@ in sampling time.
   receivers can be calulated using the complex conjugate
   multiplication, as seen in equation \ref{eq:phccm},
   where $S_\text{1}$ and $S_\text{1}$ are the corresponding
-  frequency bins in the \gls{fft} of receivers one and two.
+  frequency bins in the \gls{fft} of receivers one and two
+  and $A$ is a real valued scaling factor.
 
   \begin{equation}
     \label{eq:phccm}
@@ -163,7 +164,8 @@ in sampling time.
 
   To estimate the angle of incidence for a specific
   signal a vector $\vec{a}_s$ of these calculated phase differences
-  for every receiver pair is constructed:
+  for every receiver pair is constructed, where e.g. $\varphi_\text{1,2}$
+  is the phase difference between receiver 1 and 2:
 
   \begin{equation*}
     \vec{a}_s=
@@ -183,9 +185,9 @@ in sampling time.
   and the direction of incidence $\theta$. \\
 
   The scalar dot product of both vectors $\vec{a}_s$ and $\vec{b}(\theta)$,
-  when swept over $\theta$ will have a maximum when both
-  vectors are parallel $\theta_\text{max}$ and a minimum
-  $\theta_\text{min}$ when they are anti-parallel. \\
+  when swept over $\theta$, will have a maximum when both
+  vectors are parallel (at $\theta_\text{max}$) and a minimum
+  (at $\theta_\text{min}$) when they are anti-parallel. \\
 
   The vectors $\vec{a}_s$ and $\vec{b}(\theta_\text{max})$ being parallel
   means, that the phase differences in $\vec{a}_s$
@@ -255,7 +257,8 @@ in sampling time.
   $f_\text{lo,2}$ and phases of $\varphi_\text{lo,1}$
   and $\varphi_\text{lo,2}$ the difference between
   these frequencies and phases will also be present
-  in the resulting phase difference $\Delta \varphi$. \\
+  in the resulting phase difference $\Delta \varphi$,
+  as shown in equation \ref{eq:ccmpoff}. \\
 
   In order to get the actual phase difference between
   the two input signals $S_\text{in,1}$ and $S_\text{in,2}$
@@ -269,14 +272,14 @@ in sampling time.
 
   If the same signal $s_\text{in}(t)$ is received
   by two receivers $a$ and $b$ the samples wil be
-  delayed by times $t_\text{a}$ and $t_\text{b}$ before
+  delayed by the delays $t_\text{a}$ and $t_\text{b}$ before
   being processed to extract phase informations.
 
-  These delays are introduced by unmached cable lengths,
-  causing runtime differences, digitization delays and
-  time the samples spend in buffers. \\
+  These delays are introduced by unmached cable lengths
+  causing runtime differences, digitizing delays and
+  time the samples spend in memory buffers. \\
 
-  When the delayed signals are fourier transformed the
+  When these delayed signals are fourier transformed the
   delays result in rotating signal phases
   \cite[p. 802]{bronstein2016}, as seen in equation
   \ref{eq:tdiffrot}, where $S_\text{in}(i \omega)$ is the fourier
@@ -293,7 +296,7 @@ in sampling time.
   When the phase difference between these two fourier
   transformed signals is calculated using complex conjugate
   multiplication the difference in the processing delays
-  will manifest in the output phase.
+  will also manifest in the output phase.
 
   \begin{align}
     \mathcal{F} \left\{ s_\text{in}(t - t_\text{a}) \right\} \cdot
@@ -311,7 +314,7 @@ in sampling time.
 
   For small time differences $\Delta t$ the effect on the output
   phases will be a linear slope with respect to the frequency
-  $\varphi(\omega)= c_\text{slope} \cdot \omega$ which will wrap
+  $\varphi(\omega)= \omega \cdot c_\text{slope}$ which will wrap
   at $-\pi$ and $\pi$.
   For larger $\Delta t$ the steepness will increase up to a
   point where, due to the wrapping effect, the original phase
@@ -320,11 +323,11 @@ in sampling time.
 
 \begin{subchapter}{Common noise}
   A common assumption in communications engineering, when
-  studying MIMO-systems, is that the reciever noises are
+  studying MIMO-systems, is that reciever noises are
   uncorrelated. \\
 
   This thesis does not use this assumtion but instead
-  relies on the presence of a common noise coponent
+  relies on the presence of a common noise component
   that can be used to synchronize the receivers. \\
 
   The corresponding noise model is shown in equation
@@ -348,15 +351,15 @@ in sampling time.
   \begin{description}
     \item[Passband noise]
       Noise in the desired RF-Band caused by various background-radiation
-      sources.
+      sources received by the antennas.
 
     \item[Baseband noise]
       Low frequency noise like power-grid radiation or EMI from e.g.
-      LED light fixtures that is coupled into the baseband lines on
-      the receiver PCB due to insufficient shielding.
+      noisy LED light fixtures that is coupled into the baseband transmission
+      lines on the receiver PCB due to insufficient shielding.
 
     \item[Common clock noise]
-      Noise introduced into the shared clock signal used by all
+      Noise introduced into the shared clock signal used by the
       receivers.
   \end{description}
 
@@ -378,26 +381,28 @@ in sampling time.
 
   Assuming every noise component has an autocorrelation that is zero
   for $\tau \neq 0$ and $n_\text{1}$ ... $n_\text{4}$ and $n_\text{c}$
-  are uncorrelated. The correlation between
+  are uncorrelated, the correlation between
   $n_\text{r,1}$ ... $n_\text{r,4}$ will have a maxmimum at $\tau = 0$.
 
   The time difference between different signals can thus be
-  calculated by filtering out the signal and finding the
-  maxmimum correlation between the input signals.
+  calculated and compensated by filtering out the signal and finding the
+  maxmimum correlation between the receiver noises.
 \end{subchapter}
 
 \begin{subchapter}{\acrshort{music}}
+  The direction finding algorithm used in this thesis
+  is very basic, to simplyfy the implementation.
   There are also a number of more sophisticated algorithms
   that provide better direction estimation results, be it
   by providing better resolution, noise imunity or the
   ability to separate multiple signal sources occupying
-  the same frequency range. \\
+  the same frequency band. \\
 
   On of the earliest of these algorithms is \gls{music},
   first published in 1979 by Ralph O. Schmidt \cite{schmidt1979}. \\
 
   Unlike the algorithm used in this thesis \gls{music}
-  does not perform a transformation to the frequency-domain
+  does not perform a transformation to the frequency-domain,
   but performs the direction estimation directly
   in the time-domain. \\
 
@@ -408,14 +413,14 @@ in sampling time.
 
     A delay in one of these narrowband signals can be approximated
     by a phase shift, as the signal's behaviour closely resembles
-    that of a sinusoid \cite[p. 4]{girdmusic}.
+    that of a sinusoid \cite[p. 4]{girdmusic}. \\
 
     In a multi-antenna arrangement the same signal $s_{i}(t)$ will be
     received by the antennas with different amounts of delay.
     Given, that the delays can be modeled by phase shifts,
-    the received signals $\vec{x}(t)$ can be expressed by the multiplication
-    of the input signal by a vector $\vec{a_{i}}(\theta)$ that models the
-    relative phase-shifts.
+    the vector of received signals $\vec{x}(t)$ can be expressed
+    by the multiplication of the input signal by a vector
+    $\vec{a_{i}}(\theta)$ that models the relative phase-shifts.
 
     \begin{equation}
       \vec{x}(t) =
@@ -456,7 +461,7 @@ in sampling time.
     \end{equation}
 
     In an actual system the received signals $\vec{x}(t)$ will also
-    each be superimposed by noise $n_{1}$…$n_{4}$.
+    each be superimposed by noises $n_{1}$…$n_{4}$.
 
     \begin{equation}
       \vec{x}(t) =  \bm{A} \vec{s}(t) + \vec{n}(t)
@@ -470,7 +475,7 @@ in sampling time.
   \end{subsubchapter}
 
   \begin{subsubchapter}{Signal decomposition}
-    To separate the noise and payload subsignals
+    To separate the noise and signal subsignals
     MUSIC makes use of a correlation Matrix,
     that estimates the correlation between the received
     signals, and principal component analysis to
@@ -491,43 +496,46 @@ in sampling time.
       \quad \text{\cite{wikicorrelation}}
     \end{equation}
 
-    As the $R$ is non-negative definite \cite[p. 9]{girdmusic}
+    As the $R$ matrix is non-negative definite \cite[p. 9]{girdmusic}
     it can be transformed into a diagonal form using
     principal component anaylsis by finding the eigenvectors and -values
     \cite[p. 325]{bronstein2016}.
 
     \begin{equation}
+      \label{eq:pcompdecomp}
       \bm{R} = \bm{U} \bm{D} \bm{U}^{H}
     \end{equation}
 
-    Where the diagonal elements of $\bm{D}$
+    The decomposition of $R$ is shown in equation \ref{eq:pcompdecomp},
+    where the diagonal elements of $\bm{D}$
     are the eigenvalues of $\bm{R}$ and $\bm{U}$
-    consists of its normalized eigenvectors.
+    consists of its normalized, corresponding eigenvectors.
     $\bm{D}$ and $\bm{U}$ should be sorted in a way,
     that the eigenvalues are descending in value. \\
 
     For a number of signals $I$ smaller than the
     number of receivers $N$, the first $I$ eigenvalues
     will correspond to the signal strengths of the signals
-    and the remaining $N - I$ eigenvalues will be small as they
+    and the remaining $N - I$ eigenvalues will be low as they
     correspond to the correlation of the noise. \\
 
     This means, that as long as the number of signals is
     known and smaller than the number of receivers the
     diagonal matrix $\bm{D}$ can be separated into a part
-    corresponding to the signals and a part corresponding to
-    the noise.
+    corresponding to the signals (large eigenvalues) and
+    a part corresponding to the noise (small eigenvalues).
 
-    MUSIC uses informations from the noise-subspace to extract
-    DOA informations \cite{madisetti2010}, other algorithms
-    like e.g. ESPRIT use the signal-subspace for DOA-estimation. \\
+    MUSIC uses informations from the noise-subspace (small eigenvalues
+    and corresponding eigenvectors) to extract
+    DOA informations \cite{madisetti2010}, other algorithms,
+    like e.g. ESPRIT, use the signal-subspace for DOA-estimation. \\
 
     To extract direction information from the noise-eigenvectors
-    a test steering-vector $\vec{a_{t}}(\theta)$ that contains
+    a test steering-vector $\vec{a_{t}}(\theta)$, that contains
     the expected phase-shifts based on the direction of incidence
-    $\theta$ and the array geometry is constructed.
+    $\theta$ and the array geometry, is constructed.
 
-    To calculate the \gls{music} estimation of the signal strength from
+    To calculate the \gls{music} estimation of the signal strength for
     this direction $\theta$ the evaluation function \ref{eq:musicev}
     is used \cite[p. 12]{girdmusic} where $U_{n}$ is the $n$th
     (noise-)eigenvector of $R$.
@@ -553,7 +561,7 @@ in sampling time.
     eigenvectors. \\
 
     The evaluation function calculates the dot product for every
-    noise eigenvector and returns the inverse so that a
+    noise eigenvector and returns the multiplicative inverse so that a
     $\vec{a_{t}}(\theta)$ in the signal subspace yields a large
     result.
   \end{subsubchapter}
