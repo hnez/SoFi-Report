@@ -2,7 +2,7 @@ Direction of arrival estimation of \acrshort{rf}-Signals
 works by analyzing the signals received by
 multiple antennas distributed in space.
 
-The common approach is to exploit the fact
+The common approach is to exploit the fact,
 that the signals received at antennas further
 away from a source are more affected by the channel
 they are transmitted over.
@@ -12,20 +12,20 @@ observing the signal strength and/or phase
 at the receiving antennas.
 
 For systems where the distance between
-the sender and the receiving antennas is much
+the sending and the receiving antennas is much
 smaller than the distance between the receiving
 antennas, the difference in signal strength
 are usually very small and using the phase
 differences provides better accuracy. \\
 
 The system implemented in this thesis will use \gls{sdr}
-technology and fourier transformation to calculate \gls{doa}
+technology and fourier transformations to calculate \gls{doa}
 information for all signals present in a given frequency range.
 More sophisticated algorithms like \acrshort{music} employ
 a cross-correlation Matrix as an early processing step,
 allowing for better separation of signals and noise
 but also limiting the number of signals analyzed at
-a time to one fewer than the number of receivers. \\
+a time to be less than the number of receivers. \\
 
 Using multiple cheap, independent receivers instead
 of purpose-built hardware also poses some challenges
@@ -40,7 +40,7 @@ in sampling time.
 
   The diagram shows four antennas spaced out on a plane
   and a stilized wave that is received by all four of them.
-  The source of the wave is assumed to be so far away that
+  The source of the wave is assumed to be so far away, that
   the signal-rays are approximately parallel when
   they reach the receivers. \\
 
@@ -49,8 +49,8 @@ in sampling time.
   phases at those receivers are the same.
   On the other hand the signal has to travel further to reach
   receiver $D$ that to reach $A$, the difference in phase can
-  be directly calculated from the wavelength of the signal and
-  the distance between the antennas.
+  be directly calculated from the wavelength $\lambda$ of the
+  signal and the distance $d_\text{AD}$ between the antennas.
 
   \begin{equation*}
     \Delta \varphi =  2 \pi \cdot \frac{d_\text{AD}}{\lambda}
@@ -64,9 +64,9 @@ in sampling time.
   In a more realistic scenario the the signals will reach the
   receivers at odd angles. Figure \ref{img:angle_two_receivers}
   shows an example where a signal reaches the receivers at an
-  angle of $\alpha=\SI{45}{\degree}$. The length that can be calculated
+  angle of $\alpha=\SI{45}{\degree}$. The length, that can be calculated
   from the phase difference $\Delta \varphi$ between the receivers and
-  the wavelength $\lambda$ of the signal is marked as $\Delta l$.
+  the wavelength $\lambda$ of the signal, is marked as $\Delta l$.
 
   The direction of arrival $\alpha$ can then be calculated from
   those lengths using equation \ref{eq:doa_trigonometry}.
@@ -85,6 +85,8 @@ in sampling time.
 \end{subchapter}
 
 \begin{subchapter}{The effect of noise}
+  % TODO: this chapter sucks
+
   There is however a mayor drawback to the DOA-estimation
   technique discussed above: it does not work in the presence of noise. \\
 
@@ -113,21 +115,21 @@ in sampling time.
   analyzing differences in signal phase between receivers
   distributed in space. \\
 
-  It is assumed that the signals $s_0$ ... $s_n$
+  It is assumed, that the signals $s_0$ ... $s_n$
   can be clearly separated in the frequency domain,
   meaning that their bandwith is a lot smaller than
-  the differences of their center frequencies.
-  And that the direction of incidence does not
-  change rapidly for a frequency. \\
+  the differences of their center frequencies
+  and that the direction of incidence does not
+  change rapidly for a fixed frequency. \\
 
-  FM-radio stations these fulfill these requirements
+  FM-radio stations fulfill these requirements,
   as they are intended to be easily separable by
   frequency and the (stationary) transmission towers continously
   broadcast at the same frequency. \\
 
-  An example where these assumtions do not hold is
+  One example where these assumtions do not hold is
   \acrshort{umts}, where transmitters are not completely
-  separable by frequency and where there the locations
+  separable only by frequency and where there the locations
   of active transmitters might change quickly due
   to time-sharing. \\
 

@@ -1,15 +1,15 @@
 This thesis aims to explore if a low-cost \gls{doa} estimation
-system can be implemented by utilizing commodity \gls{sdr} hardware
-and background noise that is common to the different receivers as
-a means of time-domain synchronization. \\
+system can be implemented by utilizing commodity \gls{sdr} hardware.
+And if common background noise at the different receivers can serve
+as a sufficient means of time-domain synchronization. \\
 
 The measurement rig is intended to measure the angle of incident
-of FM-Radio signals which should, assuming known broadcasting-tower
-locations allow estimations of the current receiver location on
+of multiple FM-Radio signals which should, assuming known broadcasting-tower
+locations, allow estimations of the current receiver location on
 a 2D-plane. \\
 
 The rig utilizes DVB-T USB donles that where discovered \cite{rtlhistory}
-to contain a feature to pass raw I/Q \acrshort{adc} samples
+to contain a feature to pass raw \acrshort{iqsig} \acrshort{adc} samples
 to the host computer, making it a receive-only \gls{sdr}. \\
 
 Most \gls{doa} algorithms require tight synchronization between
@@ -17,13 +17,15 @@ the receiving units in time and frequency. To meet these requirements
 \gls{doa} rigs usually employ custom hardware and/or a dedicated
 reference signal source. \\
 
-To explore the minimal requirements for a sucessful synchronization
-the build at hand uses only minimal hardware modifications
-to lock the receiver frequencies to prevent phase drifting. \\
+To explore the minimal requirements for a sucessful synchronization,
+the rig at hand uses only minimal hardware modifications to
+the stock USB dongles to lock the receiver
+frequencies to prevent phase drifting. \\
 
-The approach also does not use a dedicated reference signal
+The rig also does not use a dedicated reference signal
 for timing synchronization but instead relies on correlations
-in the noise-floor of the receivers. \\
+in the noise-floor of the receivers to synchronize them
+using the noise cross-correlation. \\
 
 By utilizing consumer-grade \gls{sdr} and computing hardware
 a \gls{doa}-rig can be assembled for about $\SI{50}{\eurcur}$,
