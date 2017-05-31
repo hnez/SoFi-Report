@@ -109,6 +109,87 @@ in sampling time.
 \end{subchapter}
 
 \begin{subchapter}{Basic direction estimation}
+  As discussed earlier the direction estimation works by
+  analyzing differences in signal phase between receivers
+  distributed in space. \\
+
+  It is assumed that the signals $s_0$ ... $s_n$
+  can be clearly separated in the frequency domain,
+  meaning that their bandwith is a lot smaller than
+  the differences of their center frequencies.
+  And that the direction of incidence does not
+  change rapidly for a frequency. \\
+
+  FM-radio stations these fulfill these requirements
+  as they are intended to be easily separable by
+  frequency and the (stationary) transmission towers continously
+  broadcast at the same frequency. \\
+
+  An example where these assumtions do not hold is
+  \acrshort{umts}, where transmitters are not completely
+  separable by frequency and where there the locations
+  of active transmitters might change quickly due
+  to time-sharing. \\
+
+  The algorithm used in this thesis operates completely
+  in the frequency domain, so the time-domain \gls{sdr}
+  samples are fourier-transformed before being processed
+  further using an \gls{fft}.
+  The \gls{fft} decomposes the signal into a pre-defined
+  number of frequency bins. \\
+
+  The same signal, received at different receivers will
+  be, according to its frequency, sorted into the same
+  frequency bin in its respective \gls{fft}.
+
+  The phase information of the signal will be preserved
+  when it is transformed by the \gls{fft}.
+  This means, that the signal phase can be analyzed by
+  analyzing the phase of the corresponding \gls{fft}
+  bin.
+  The phase difference $\Delta \varphi$ between two
+  receivers can be calulated using the complex conjugate
+  multiplication, as seen in equation \ref{eq:phccm},
+  where $S_\text{1}$ and $S_\text{1}$ are the corresponding
+  frequency bins in the \gls{fft} of receivers one and two.
+
+  \begin{equation}
+    \label{eq:phccm}
+    A \cdot e^{i \cdot \Delta \varphi}
+    = S_\text{1} \cdot S_\text{2}^\ast
+  \end{equation}
+
+  To estimate the angle of incidence for a specific
+  signal a vector $\vec{a}_s$ of these calculated phase differences
+  for every receiver pair is constructed:
+
+  \begin{equation*}
+    \vec{a}_s=
+    \begin{pmatrix}
+      \varphi_\text{1,2} \\
+      \varphi_\text{1,3} \\
+      \varphi_\text{1,4} \\
+      \varphi_\text{2,3} \\
+      \varphi_\text{2,4} \\
+      \varphi_\text{3,4} \\
+    \end{pmatrix}
+  \end{equation*}
+
+  Additionally a vector $\vec{b}(\theta)$ is constructed
+  that contains the expected phase differences between the
+  receivers based on the wavelength $\lambda$, the antenna distance $d$
+  and the direction of incidence $\theta$. \\
+
+  The scalar dot product of both vectors $\vec{a}_s$ and $\vec{b}(\theta)$,
+  when swept over $\theta$ will have a maximum when both
+  vectors are parallel $\theta_\text{max}$ and a minimum
+  $\theta_\text{min}$ when they are anti-parallel. \\
+
+  The vectors $\vec{a}_s$ and $\vec{b}(\theta_\text{max})$ being parallel
+  means, that the phase differences in $\vec{a}_s$
+  match the expected phases difference for the angle of
+  incidence $\theta_\text{max}$.
+  Thus $\theta_\text{max}$ is the estimated direction of arrival.
 \end{subchapter}
 
 \begin{subchapter}{Receiver offsets: frequency}
