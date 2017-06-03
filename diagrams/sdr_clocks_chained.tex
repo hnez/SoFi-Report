@@ -48,22 +48,27 @@
   +(0, 2) to[short]
   (mixer_i.1);
 
+  % Lowpass 1
   \draw
   (mixer_i.3) to[lowpass, >]
-  +(3, 0) to[adc, >]
+  +(3, 0) to[short, -]
+  +(1, 0) to[adc, >]
   +(2, 0) to[short, -*]
-  +(0.5,0);
+  +(0.5,0) node[right]{I};
 
+  % Lowpass 2
   \draw
   (mixer_q.3) to[lowpass, >]
-  +(3, 0) to[adc, >]
+  +(3, 0) to[short, -]
+  +(1, 0) to[adc, >]
   +(2, 0) to[short, -*]
-  +(0.5,0);
+  +(0.5,0) node[right]{Q};
 
+  % ADC PLL
   \draw
   (pierce_out_2) to[short, *-]
   +(3.0, 0) coordinate(clk_out) to[short]
-  +(1.5, 0) to[twoport, t=PLL, >]
+  +(2.5, 0) to[twoport, t=PLL, >]
   +(0, 2) coordinate(adc_pll_tap) to[short]
   +(0.8, 0.8) node[inputarrow, rotate=45]{};
 
@@ -86,14 +91,15 @@
   (1.50, 7.25) --
   (1.50, 0.25);
 
+  % ADC Box
   \draw[densely dotted]
-  (8, 0.25) --
+  (8.75, 0.25) --
   (11.5, 0.25) --
   (11.5, 7.25) --
-  (8, 7.25) --
-  (8, 0.25);
+  (8.75, 7.25) --
+  (8.75, 0.25);
 
   \draw
   (4.375, 0.25) node[below]{R820T2}
-  (9.75, 0.25) node[below]{RTL2832U};
+  (10, 0.25) node[below]{RTL2832U};
 \end{tikzpicture}
