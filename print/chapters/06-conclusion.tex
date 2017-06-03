@@ -1,0 +1,77 @@
+Unfortunately the project as a whole did not
+perform as I had hoped it would perform.
+
+\noindent
+The parts that worked as expected were:
+
+\begin{itemize}
+  \item
+    The hardware modifications to lock the input clocks
+    to the same source. \\
+    There was a remaining slow drift in
+    the signal phase, that was most likely due to a bit of jitter
+    in the \acrshort{losig}-frequency generating \glspl{pll}.
+    But due to the drift being slow it can easily be compensated by
+    the offset compensation \acrshort{pid}-controllers in the frequency domain.
+
+  \item
+    The sample-exact time compensation works as expected and
+    only requires a few iterations to sucessfuly lock onto
+    the correct time-offset.
+
+  \item
+    The sub-sample time compensation and tuner phase
+    offset compensation mostly worked.
+    When the number of found noise-points upon startup
+    were too small, the controllers may failed to lock
+    correctly, as the algorithm only tried to minimize the
+    offsets at these noise-points.
+    The results of a failed lock can be seen in figure
+    \ref{img:failed_lock}.
+\end{itemize}
+
+\figurizefile{diagrams/lock_fail}
+             {img:failed_lock}
+             {A failed sub-sample compensation lock}
+             {0.7}{H}
+
+The mayor point that did not work as expected was the direction
+of arrival estimation. Possible reasons might be
+multi-path effects in the tested frequency range
+at about $\SI{100}{\mega\hertz}$ or a more
+fundamental error in the estimation algorithm
+or its implementation. \\
+
+It is also possible that due to their proximity
+the antennas in the array interfered and acted
+as a single antenna with unkown characteristics. \\
+
+The synchronization by using common background noise
+was also not well characterized.
+Although the compensated phase diagrams looked well
+formed there might have been a resdual systematic
+compensation error distorting the direction estimation.
+
+A setup as demonstrated in rtl\_coherent\cite{rtlcoherent}, that
+utilizes a dedicated wideband noise-source, would
+have provided a more solid base to independently characterize
+the different procesing steps. \\
+
+To test the DOA-algorithm a simulator
+was written, that simulated a spectrum
+including a few transmitters and independant noise but no
+multi-path effects.
+The simulator replaced the \gls{sdr} devices in the
+SoFi processing chain.
+
+In the simulated case the SoFi DOA estimation
+worked as expected indicating that multi-path
+effects were indeed a problem or that the simulation
+was otherwise not accurate enough.
+
+Due to the simulation only simulating independant
+noises, as there was no reliable model for the
+assumed common noise term, the sychronization
+procedures had to be partially disabled.
+The simulation could thus also not be used
+to validate the synchronization code. \\

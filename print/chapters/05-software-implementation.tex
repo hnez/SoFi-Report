@@ -1,60 +1,61 @@
-The implementation is split into a part implemented in
-the C programming language, that performs basic signal
+The implementation is split into two software parts,
+one implemented in C, that performs basic signal
 processing on the high-throughput input streams, and
-a part implemented in Python that performs direction estimation
+one implemented in Python, that performs direction estimation
 at a lower speed.
 
 \begin{subchapter}{\texttt{libsofi.c}}
   As the preprocessing code has to deal with samples
-  before the first downsamling stage the data rates to be
+  before the first downsamling stage, the data rates to be
   processed are rather high.
   In order to be able to run on low-range computing hardware
-  this part of the processing chain is written in the C
-  programming language and
+  this part of the processing chain is written in C and
   uses the highly optimized \texttt{fftw3} and \texttt{volk}
-  libraries, for accelerated FFT and vector operations. \\
+  software-libraries, for accelerated \gls{fft} and vector operations. \\
 
-  The program flow starts off by initializing the SDR
+  The program flow starts off by initializing the \gls{sdr}
   dongles. The communication with the dongles is performed
   by using a hardware abstraction layer for software-defined radio
-  devices that was introduced into recent versions of
-  the Linux kernel. This means that the program should work
-  with all SDR devices supported in the Linux kernel,
-  as long as their clock sources are synchronized.
+  devices, that was introduced into recent versions of
+  the Linux kernel. This means, that the program should work
+  with all \gls{sdr} devices supported in the Linux kernel,
+  as long as their clock sources are synchronized \cite{v4lsdr}.
 
   The actual transfer of samples is performed using
-  buffers that are shared between the application and
-  the kernel, to minizize the number of copy operations performed. \\
+  buffers, that are shared between the application and
+  the kernel, to minizize the number of
+  copy operations performed \cite{v4lmmap}. \\
 
   To utilize the processing power of multi-core processors
-  FFT calculations are performed in one thread per
-  SDR device, distributing the load over the available cores.
+  \gls{fft} calculations are performed in one thread per
+  \gls{sdr} device, distributing the load over the available cores.
 
-  Once the SDR devices are initialized and acquiring samples
+  Once the \gls{sdr} devices are initialized and acquiring samples
   they are synchronized by calculating the
   cross-correlation between the per-device streams
   and discarding samples until the peak appears at a
-  sample-offset of $0$.
+  sample-offset of $0$. \\
 
   All the operations after the synchronization phase are
-  performed in the frequency domain.
-  At this point the processing threads, that
+  performed in the frequency domain. \\
+
+  After the synchronization the processing threads, that
   take the time domain samples from the shared buffers and transfer
   them into the frequency domain, are started.
 
-  For every receiver $m$ the FFT calculation yields phase
+  For every receiver $m$ the \gls{fft} calculation yields phase
   and magnitude information for $1024$ frequency bins.
   The values $i_\text{m,n}$ in these frequency bins can not
-  be averaged directly as the current signal phase can be
+  be averaged directly, as the current signal phase can be
   influenced by signal modulation and thus behaves randomly.
   When these stochastic samples are averaged over a sufficiently long
   timespan they would thus cancel out. \\
 
   In order to be able to perform the necessary averaging
-  and downsampling, instead of using the absoulte phases
-  directly from the FFT, the phase differences between the receivers
+  and downsampling, instead of using the absolute phases
+  directly from the \gls{fft}, the phase differences between the receivers
   are calulated prior to the averaging step, using complex conjugate multiplication.
-  For four receivers this leads to six difference signals
+  For four receivers this leads to six difference signals,
   that are calulated according to the ecuations seen below.
 
   \begin{equation*}
@@ -65,28 +66,28 @@ at a lower speed.
     \end{aligned}
     \qquad \qquad
     \begin{aligned}[c]
-      o_\text{4}&= i_\text{2,n} \cdot i_\text{3,n}^{\ast} \\
-      o_\text{5}&= i_\text{2,n} \cdot i_\text{4,n}^{\ast} \\
-      o_\text{6}&= i_\text{3,n} \cdot i_\text{4,n}^{\ast}
+      o_\text{4,n}&= i_\text{2,n} \cdot i_\text{3,n}^{\ast} \\
+      o_\text{5,n}&= i_\text{2,n} \cdot i_\text{4,n}^{\ast} \\
+      o_\text{6,n}&= i_\text{3,n} \cdot i_\text{4,n}^{\ast}
     \end{aligned}
   \end{equation*}
 
-  These values are then averaged to reduce the sample-rate
+  The resulting values $o_\text{1,n}$ ... $o_\text{6,n}$
+  are then averaged over time to reduce the sample-rate
   and forwarded to the next processing steps.
 \end{subchapter}
 
 \begin{subchapter}{\texttt{libsofi.py}}
-  After the downsampling performed in the backend code
-  the data rate is greatly reduced, further processing
+  After the downsampling is performed in the backend code
+  the data rate is greatly reduced. Further processing
   can thus be performed in Python, an interpreted scripting
   language that, in conjunction with numpy, a software library for
-  numeric calulations, makes writing DSP task easier
-  than programming in C.
+  numeric calulations, makes writing \acrshort{dsp} task easier
+  than expressing the algorithms in C. \\
 
   The data-transfer from C to Python is performed using
-  a bit of glue-code that uses the \texttt{ctypes}
-  foreign-function-interface (FFI).
-
+  a bit of glue-code that uses the Python \texttt{ctypes}
+  \gls{ffi}.
   This glue-code allows the C code to be imported
   into the Python code just like a native Python module.
 \end{subchapter}
@@ -97,7 +98,7 @@ at a lower speed.
   vector operations and signal processing tasks. \\
 
   This part of the processing chain operates completely
-  in the frequency-domain, it is responsible for
+  in the frequency domain, it is responsible for
   performing the compensation tasks to get from the
   raw phase diagram, as seen in Figure \ref{img:annotated_fft_phase_orig},
   to the fully compensated phase diagram,
@@ -106,7 +107,7 @@ at a lower speed.
   It also uses these phase diagrams to calulate direction informations
   for the signal sources in the spectrum. \\
 
-  The compensation step works by first finding the local minima in
+  The compensation works by first finding the local minima in
   the amplitude spectrum, as seen in figure \ref{img:annotated_fft_mag},
   these are the frequencies with the lowest signal strength
   and can thus be assumed to be dominated noise.
@@ -129,31 +130,43 @@ at a lower speed.
   with strong signals, as can be seen in
   figure \ref{img:annotated_fft_phase_zoom}. \\
 
-  In addition to finding the frequencies that are dominated
-  by noise the program also finds peaks in received power.
+  In addition to finding the frequencies, that are dominated
+  by noise, the program also finds peaks in received signal strength.
   These peaks correspond to the center frequencies of the currently active
   transmitters.
   These frequencies are then added to a list of sources to be
   analyzed. \\
 
   As the direction estimation model depends on the
-  signal wavelength the programs goes through each of
-  these frequencies and generates a modeling matrix. \\
+  signal wavelength, the program generates a modeling matrix
+  for each of these frequencies. \\
 
-  The code that generates these matrices can be seen in
+  The code, that generates these matrices, can be seen in
   listing \ref{lst:direction_model}.
-  The code creates a vector consisting of possible input
-  angles (from $-\pi$ to $\pi$ in radians)
+  The snippet creates a vector consisting of possible input
+  \acrlong{doa} angles (from $-\pi$ to $\pi$ in radians)
   and calculates the expected phase difference for each
-  antenna pair based on the antenna pair orientation,
+  antenna pair based on the antenna pair's orientation,
   distance, input angle and signal wavelength.
 
   \begin{lstlisting}[language=Python, frame=single,
       numbers=left, label={lst:direction_model},
       caption={Code fragment that calculates the receiver model}]
+    # Calculate "relative wavelengths" (in radians)
+    # based on the antenna distances in the
+    # edge_distances vector and the actual signal wavelength
     rel_wl= 2 * math.pi * edge_distances / wavelength
+
+    # Generate a vector of length self.dir_len an populate
+    # it with incidence angles from -π to π
     test_angles= np.linspace(-math.pi, math.pi, self.dir_len)
 
+    # Generate an empty target matrix
+    pos_mat= np.zeros((self.dir_len, self.edges_count))
+
+    # Go through every incidence angle and populate
+    # the corresponding row with the expected phase
+    # difference
     for (idx, test_angle) in enumerate(test_angles):
         rel_angles= edge_angles + test_angle
         pos_mat[idx, :]= rel_wl * np.sin(rel_angles)
@@ -163,21 +176,40 @@ at a lower speed.
   and a vector consisting of the measured phase differences
   is equivalent to calculating the scalar dot product of the
   modeled phase difference vector and the actually measured
-  phase difference vector for every input angle. \\
+  phase difference vector for every input angle.
+  The code implementing this calculation is
+  thus very short, as shown in listing \ref{lst:directioncalc}. \\
+
+  \begin{lstlisting}[language=Python, frame=single,
+      numbers=left, label={lst:directioncalc},
+      caption={Code fragment that calculates the \gls{doa} estimation}]
+    # Get a test matrix according to the
+    # wavelength
+    pmat= self.get_position_matrix(wl_start, wl_end)
+
+    # Perform a matrix-vector multiplication
+    # of the test matrix and the measured phases
+    return(pmat @ phase_vector)
+  \end{lstlisting}
 
   As the scalar dot product yields its largest result
   when both vectors are in parallel and its smallest
   result when both vectors are anti-parallel the
-  matrix-vector multiplication yields a vector where
+  matrix-vector multiplication yields a vector, where
   the position of the largest value corresponds to the
   angle of incidence of the signal.
 \end{subchapter}
 
 \begin{subchapter}{\texttt{sofi\_ui.py}}
-  The Displaying of the direction estimation is performed
+  The Visualization of the direction estimation is performed
   using the \texttt{matplotlib} and \texttt{Gtk+} software-libraries.
+
+  \figurizefile{diagrams/sofi_ui}
+               {img:sofi_ui}
+               {The SoFi user interface}
+               {0.5}{H}
 
   Figure \ref{img:sofi_ui} shows the SoFi interface.
   The bottom half displays the amplitude spectrum and
-  the top half displays the direction estimation data. \\
+  the top half displays the direction estimation data.
 \end{subchapter}

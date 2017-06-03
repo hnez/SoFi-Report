@@ -1,6 +1,6 @@
 In addition to frequency locking, that is performed in
-hardware, additional synchronization steps have to
-be performed. These steps are now presented in the
+hardware, additional synchronization steps are
+performed. These steps are now presented in the
 order they are performed. \\
 
 \begin{subchapter}{Sample-exact time compensation}
@@ -10,16 +10,17 @@ order they are performed. \\
   This effect is demonstrated in figures
   \ref{img:samples_actual_time} to \ref{img:samples_synchronized_time}. \\
 
-  The first figure \ref{img:samples_actual_time} shows the
+  Figure \ref{img:samples_actual_time} shows the
   times at which samples were taken and put into the
-  sample-buffer of the corresponding receiver along
-  with their index in the sample buffer.
+  sample-buffer of the corresponding receiver, along
+  with their index in the sample buffer.  \\
+
   In a more realisitic diagram the differences between the
-  times at which the first samples are taken would be
-  a lot bigger compared to the sampling rate as the
+  times at which the first samples are recored would be
+  a lot bigger compared to the sampling rate, as the
   differences in startup time are usually in the range
   of hundreds of milliseconds and the sampling rates are
-  in the order of a couple kiloherz to a few megaherz.
+  in the order of a couple kiloherz to a few megaherz. \\
 
   \figurizefile{diagrams/samples_actual_time.tex}
                {img:samples_actual_time}
@@ -27,9 +28,9 @@ order they are performed. \\
                {0.5}{ht}
 
   Upon reading the samples from the device-buffers
-  the information about the absolute aquisition time is
-  lost. To a program reading the ADC data the
-  samples thus look like in figure \ref{img:samples_observed_time}.
+  the information considering the absolute aquisition time is
+  lost. To a program reading the \acrshort{adc} data the
+  stream of samples thus look like in figure \ref{img:samples_observed_time}. \\
 
   \figurizefile{diagrams/samples_observed_time.tex}
                {img:samples_observed_time}
@@ -37,12 +38,17 @@ order they are performed. \\
                {0.5}{ht}
 
   In order to be able to analyze phase differences between
-  the signals later on they have to be synchronized to
-  a accuracy of a couple sampling times.
-  In figure \ref{img:samples_synchronized_time} all
-  samles, that where recorded before all ADC where aquiring
-  data, are discarded and the input streams are
-  synchronized to within one sampling time.
+  the signals later on, the receivers have to be synchronized to
+  a accuracy of within a couple sampling times.
+
+  The necessary synchronization is implemented by discarding
+  all samples in the device buffers that were recorded
+  before every device was recording samples.
+
+  This step is demonstrated in figure \ref{img:samples_synchronized_time}.
+  Receiver two was the last receiver to be started,
+  thus every sample recorded before receiver two was aquirirng
+  data was discarded.
 
   \figurizefile{diagrams/samples_synchronized_time.tex}
                {img:samples_synchronized_time}
@@ -50,13 +56,15 @@ order they are performed. \\
                {0.5}{ht}
 
   In order to perform this sample-exact synchronization
-  one of the receivers is used as a reference to which
-  the other receivers are synchronized by calculating the
-  cross-correlation to the other other receivers and discarding
-  samples from the receivers that are lagging behind. \\
+  one of the receivers is used as a reference.
+  The other receivers are synchronized to this reference
+  by calculating the cross-correlation of the samples between
+  the receiver and the reference.
+  And discarding samples until the cross-correlation peak
+  occurs at a time-offset of zero. \\
 
   To facilitate calculating the cross correlation over
-  more than $100k$ samples a fast fourier transformation
+  more than $\SI{100}{\kilo\relax}$ samples, a \acrlong{fft}
   is used to transfer the calculation into the frequency domain.
   The transformed cross-correlation calculation can be
   seen in equation \ref{eq:fast_cross_correlation}, where
@@ -73,26 +81,37 @@ order they are performed. \\
     \right)
   \end{equation}
 
+  The calculation above actually yields a
+  cyclic cross-correlation \cite[p. 329]{kammeyer2012},
+  so some precautions have to be taken when
+  determining the position of the peak for
+  synchronization. \\
+
   This compensation step only has to be performed
-  once upon startup as the sampling clocks are
-  derived via PLL from the same base clock because
-  of the hardware modifications.
+  once upon startup, as the sampling clocks are
+  derived via \glspl{pll} from the same base clock,
+  due to the hardware modifications.
+  Thus, as long as the \glspl{pll} stay locked,
+  the \glspl{adc} will produce samples at the
+  same rate and will not drift apart.
 \end{subchapter}
 
 \begin{subchapter}{Sub-sample time compensation}
-  As figure \ref{img:samples_actual_time} shows the
+  As figure \ref{img:samples_actual_time} shows, the
   differences in sample time between the receivers do not
   have to be integer multiples of the sample aquisition durations. \\
 
-  This implies, that the Sample-exact time compensation above
-  can not provide complete sample timing compensation as
-  a fractional difference still remains afterwards.
+  This implies, that the sample-exact time compensation above
+  can not provide complete sample timing compensation, as
+  a fractional difference might still remain after synchronization.
 
   Compensating these offsets in the time domain would
-  require fractionally resampling the incoming data streams. \\
+  require fractionally resampling the incoming data streams
+  in order to be able to shift the signals by less than
+  one sample. \\
 
-  Instead all operations from now on will be performed
-  in the frequency domain. Figure \ref{img:preprocessing_chain}
+  Instead, the input signals are now transferred to the frequency domain
+  frequency domain. Figure \ref{img:preprocessing_chain}
   shows the steps that are performed for every receiver pair prior to
   the sub-sample synchronization. \\
 
@@ -103,27 +122,20 @@ order they are performed. \\
 
   The input streams from the receivers are first delayed
   by the number of samples determined in the previous
-  synchronization step so that samples recoreded at the
+  synchronization step, so that samples recoreded at the
   same time are in the same position in the steams. \\
 
-  Next the samples are transformed into the time domain
-  using fast fourier transformations.
-  For one of the output vectors of the two FFTs the
-  complex conjugate is calculated element wise. \\
+  Next the samples are transformed to the frequency domain
+  using \glspl{fft}.
+  For one of the output vectors of the two \glspl{fft} the
+  element-wise complex-conjugate is calculated. \\
 
   The resulting frequency-domain vectors are then
-  multiplied element wise. This complex conjugate multiplication
+  multiplied element-wise. This complex conjugate multiplication
   yields a vector of complex numbers which contain the
   phase differences for the observed frequencies in
   their argument. As can be seen in equation
   \ref{eq:multiply_cplx_conj}. \\
-
-  The effect of this operation on the same complex signal
-  shifted in phase can be seen in figure \ref{img:complex_conjugate_mul} \\
-
-  In order to reduce the processing load on the following stages
-  the resulting complex values are then low pass filtered by
-  averaging and subsequently decimated.
 
   \begin{equation}
     \label{eq:multiply_cplx_conj}
@@ -138,6 +150,13 @@ order they are performed. \\
     \end{split}
   \end{equation}
 
+  The effect of this operation on the same complex signal
+  shifted in phase is shown in figure \ref{img:complex_conjugate_mul} \\
+
+  In order to reduce the processing load on the following stages,
+  the resulting complex values are then low pass filtered by
+  averaging and subsequently decimated.
+
   \figurizefile{diagrams/complex_conjugate_mul.tex}
                {img:complex_conjugate_mul}
                {Complex conjugate multiplication of phase shifted signals}
@@ -147,44 +166,68 @@ order they are performed. \\
   of antennas in the array, $n_\text{ant}$ input
   signals are mapped to $\left(n_\text{ant}-1\right)!$
   output signals.
-  The setup that is analyzed in this thesis uses
-  four antennas that produce six difference signal-streams. \\
+  The rig at hand uses
+  four antennas that produce six difference-signal streams. \\
 
-  In figure \ref{img:annotated_fft_mag} the mean
+  Figure \ref{img:annotated_fft_mag} shows the mean
   absolute values of the resulting complex output
-  vectors can be seen. The peaks in the diagram indicate
-  the presence of a transmitter at that frequency.
+  vectors for an actual measurement in the FM-Radio band.
+  The peaks in the diagram indicate
+  the presence of a transmitter at the corresponding frequency.
+
+  \figurizefile{diagrams/annotated_fft_mag.tex}
+               {img:annotated_fft_mag}
+               {Mean magnitude spectrum for four receivers}
+               {1}{H}
 
   Figure \ref{img:annotated_fft_phase_orig} shows the phases
   of the six complex output vectors. When correlating the
   diagram with figure \ref{img:annotated_fft_mag} one can already
   see some bumps in the phase differences where there are strong transmitters. \\
 
-  One can also see a rather steep sloping of the phases,
-  this is due to the sub-sample timing offsets between the
-  ADCs, to compensate them a linear correction is applied.
-  The resulting sample time compensated phase diagram can be seen in
-  figure \ref{img:annotated_fft_phase_timesync}.
-
   \figurizefile{diagrams/annotated_fft_phase_orig.tex}
                {img:annotated_fft_phase_orig}
                {Raw phase differences for four receivers}
                {1}{ht}
+
+  One can also see a rather steep sloping of the phases,
+  this is due to the sub-sample timing offsets between the
+  \glspl{adc}, to compensate them a linear correction is applied
+  to the phase.
+  The resulting sample time compensated phase diagram is shown in
+  figure \ref{img:annotated_fft_phase_timesync}.
+
+  \figurizefile{diagrams/annotated_fft_phase_timesync.tex}
+               {img:annotated_fft_phase_timesync}
+               {Phase differences after sample time offset compensation}
+               {1}{H}
 \end{subchapter}
 
 \begin{subchapter}{Tuner phase offset compensation}
   Figure \ref{img:annotated_fft_phase_timesync} shows a flattened
   phase diagram, but there are still constant offsets.
-  These offsets are caused by different phases of the LO-signals
-  that are used for mixing down the RF-signals in the tuners. \\
+  These offsets are caused by different phases of the
+  \acrshort{losig}-signals used to
+  mix down the RF-signals in the tuners. \\
 
   Figure \ref{img:annotated_fft_phase_comp} shows the phases
-  after compensating for those offsets. Frequency ranges where
+  after compensating for these offsets. Frequency ranges where
   the noise is dominant show no phase differences between
   the receivers, while ranges with active transmitters contain
   visible bumps. When zoomed in like in figure \ref{img:annotated_fft_phase_zoom}
   these bumps become a lot more prominent. \\
 
+  \figurizefile{diagrams/annotated_fft_phase_comp.tex}
+               {img:annotated_fft_phase_comp}
+               {Completely compensated phase diagram}
+               {1}{H}
+
+  \figurizefile{diagrams/annotated_fft_phase_zoom.tex}
+               {img:annotated_fft_phase_zoom}
+               {Completely compensated phase diagram with different scaling}
+               {1}{H}
+
+
   The relative phase differences will later be used to
-  determine the direction of the incoming signal.
+  determine the direction of arrival of the incoming signals.
 \end{subchapter}

@@ -2,7 +2,7 @@ Figure \ref{img:block_sdr_dongle} shows a block
 diagram of one of the receivers dongles that where used
 in this project.
 The two main components on the dongle are a
-\texttt{R820T2} tuner IC \cite{r820t2datasheet}
+\texttt{R820T2} tuner IC
 and a \texttt{RTL2832U} DVB-T receiver IC. \\
 
 \figurizefile{diagrams/sdr_clocks.tex}
@@ -19,7 +19,7 @@ local oscillator signal used for mixing down
 the RF-signal using a phase locked loop.
 It also provides a clock output pin that
 outputs a triangle waveform at the crystals
-resonant frequency. \\
+oscillation frequency \cite{r820t2datasheet}. \\
 
 The given USB-dongles uses this clock output signal
 as a clock input for the \texttt{RTL2832U}
@@ -54,7 +54,8 @@ the clock outputs is kept minimal.
 
 To provide the input pin with the correct signal
 levels a DC blocking RC network has to be used
-on the input pins.
+on the input pins as shown in
+figure \ref{img:block_sdr_dongle_chained}.
 
 \figurizefile{diagrams/sdr_clocks_chained.tex}
              {img:block_sdr_dongle_chained}
@@ -78,6 +79,11 @@ The network is fed by the previos dongle in the chain. \\
 
 The bottom right image in the figure shows the
 locations of the main components on the dongles.
+The signal flow in the figure is from the top right
+to the left.
+The signal enters the receiver through the antenna
+connector at the top right, is mixed-down by the
+tuner-IC and digitized by the \acrshort{adc} on the left.
 
 \figurizefile{diagrams/annotated_hw_mods.tex}
              {img:hw_mods}
