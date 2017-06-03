@@ -16,10 +16,12 @@ the sending and the receiving antennas is much
 smaller than the distance between the receiving
 antennas, the difference in signal strength
 are usually very small and using the phase
-differences provides better accuracy. \\
+differences provides better accuracy without
+requiring more accurate receivers. \\
 
 The system implemented in this thesis will use \gls{sdr}
-technology and fourier transformations to calculate \gls{doa}
+technology, fourier transformations and a basic \acrlong{doa}
+estimation algorithm to calculate \gls{doa}
 information for all signals present in a given frequency range.
 More sophisticated algorithms like \acrshort{music} employ
 a cross-correlation Matrix as an early processing step,
@@ -37,6 +39,11 @@ in sampling time.
   Figure \ref{img:phased_array} visualizes how signal phases
   can be used to estimate the \acrlong{doa} of a signal
   in the far field. \\
+
+  \figurizefile{diagrams/phased_array.tex}
+               {img:phased_array}
+               {Array of four antennas with a sender to the far right}
+               {0.7}{ht}
 
   The diagram shows four antennas spaced out on a plane
   and a stilized wave that is received by all four of them.
@@ -56,14 +63,9 @@ in sampling time.
     \Delta \varphi =  2 \pi \cdot \frac{d_\text{AD}}{\lambda}
   \end{equation*}
 
-  \figurizefile{diagrams/phased_array.tex}
-               {img:phased_array}
-               {Array of four antennas with a sender to the far right}
-               {0.7}{ht}
-
   In a more realistic scenario the the signals will reach the
   receivers at odd angles. Figure \ref{img:angle_two_receivers}
-  shows an example where a signal reaches the receivers at an
+  shows an example where a signal impinges on the receivers at an
   angle of $\alpha=\SI{45}{\degree}$. The length, that can be calculated
   from the phase difference $\Delta \varphi$ between the receivers and
   the wavelength $\lambda$ of the signal, is marked as $\Delta l$.
@@ -85,20 +87,10 @@ in sampling time.
 \end{subchapter}
 
 \begin{subchapter}{The effect of noise}
-  % TODO: this chapter sucks
-
   There is however a mayor drawback to the DOA-estimation
   technique discussed above: it does not work in the presence of noise. \\
 
   This is because noise can be assumed to have no distinct source.
-  If one were to inspect the signal phases in a system modeled after
-  the block diagram in figure \ref{img:preprocessing_chain} before
-  the averaging step, one would find that they look indeed quite random
-  as to be expected from noise.
-  But upon averaging the effects of the noise cancel out as can be seen in figure
-  \ref{img:annotated_fft_phase_zoom} where the phases for frequencies
-  without a strong signal are very close to zero. \\
-
   This means, that in the presence of noise the measured phase differences
   will always be smaller than those assumed in figure \ref{img:angle_two_receivers}
   by a factor $f$.
@@ -106,7 +98,7 @@ in sampling time.
   all antenna pairs and thus the factor $f$ can also be assumed to be equal. \\
 
   Thus the algorithm used for direction estimation
-  should be able to work relative with phases that are
+  should be able to work with relative phases that are
   scaled by a common noise factor.
 \end{subchapter}
 
@@ -116,7 +108,7 @@ in sampling time.
   distributed in space. \\
 
   It is assumed, that the signals $s_0$ ... $s_n$
-  can be clearly separated in the frequency domain,
+  can be perfectly separated in the frequency domain,
   meaning that their bandwith is a lot smaller than
   the differences of their center frequencies
   and that the direction of incidence does not
@@ -130,7 +122,7 @@ in sampling time.
   One example where these assumtions do not hold is
   \acrshort{umts}, where transmitters are not completely
   separable by frequency due to code multiplexing and
-  where there the locations of active transmitters
+  where the locations of active transmitters
   might change quickly due to time-sharing. \\
 
   The algorithm used in this thesis operates completely
@@ -149,23 +141,24 @@ in sampling time.
   This means, that the signal phase can be analyzed by
   analyzing the phase of the corresponding \gls{fft}
   bin.
-  The phase difference $\Delta \varphi$ between two
-  receivers can be calulated using the complex conjugate
+  The phase difference $\Delta \varphi_{n}$ between two
+  receivers for a the $n$th frequency bin can be calulated
+  using the complex conjugate
   multiplication, as seen in equation \ref{eq:phccm},
-  where $S_\text{1}$ and $S_\text{1}$ are the corresponding
+  where $S_\text{1,n}$ and $S_\text{1,n}$ are corresponding
   frequency bins in the \gls{fft} of receivers one and two
-  and $A$ is a real valued scaling factor.
+  and $A_{n}$ is a real valued scaling factor.
 
   \begin{equation}
     \label{eq:phccm}
-    A \cdot e^{i \cdot \Delta \varphi}
-    = S_\text{1} \cdot S_\text{2}^\ast
+    A_{n} \cdot e^{j \cdot \Delta \varphi_{n}}
+    = S_\text{1,n} \cdot S_\text{2,n}^\ast
   \end{equation}
 
-  To estimate the angle of incidence for a specific
-  signal a vector $\vec{a}_s$ of these calculated phase differences
+  To estimate the angle of incidence for a signal in a specific
+  \gls{fft} bin a vector $\vec{a}_s$ of the calculated phase differences
   for every receiver pair is constructed, where e.g. $\varphi_\text{1,2}$
-  is the phase difference between receiver 1 and 2:
+  is the phase difference between receiver 1 and 2 for that \gls{fft} bin:
 
   \begin{equation*}
     \vec{a}_s=
@@ -185,8 +178,8 @@ in sampling time.
   and the direction of incidence $\theta$. \\
 
   The scalar dot product of both vectors $\vec{a}_s$ and $\vec{b}(\theta)$,
-  when swept over $\theta$, will have a maximum when both
-  vectors are parallel (at $\theta_\text{max}$) and a minimum
+  when swept over $\theta$, will have a maximum (at $\theta_\text{max}$)
+  when both vectors are parallel and a minimum
   (at $\theta_\text{min}$) when they are anti-parallel. \\
 
   The vectors $\vec{a}_s$ and $\vec{b}(\theta_\text{max})$ being parallel
@@ -209,13 +202,13 @@ in sampling time.
     \label{eq:lomixer}
     S_\text{bb}
     = S_\text{in} \cdot A_\text{lna} \cdot
-      \left( S_\text{lo,i} + i S_\text{lo,q} \right)
+      \left( S_\text{lo,i} + j S_\text{lo,q} \right)
     = S_\text{in} \cdot A_\text{lna} \cdot
-      e^{i \cdot \left( 2 \pi f_\text{lo} t + \varphi_\text{lo} \right)}
+      e^{j \cdot \left( 2 \pi f_\text{lo} t + \varphi_\text{lo} \right)}
   \end{equation}
 
   To an user of an \gls{sdr} device the actual waveform
-  of the \gls{losig} is usually irrelevant and it can be
+  of the \gls{losig} is usually irrelevant and can be
   modelled as a complex sinusiod of frequency $f_\text{lo}$
   and phase $\varphi_\text{lo}$, as seen in equation \ref{eq:lomixer}. \\
 
@@ -229,21 +222,21 @@ in sampling time.
 
   \begin{align}
     \label{eq:ccmphdiff}
-    A \cdot e^{i \cdot \Delta \varphi}
+    A \cdot e^{j \cdot \Delta \varphi}
     &= S_\text{bb,1} \cdot S_\text{bb,2}^\ast \\
     &= S_\text{in,1} \cdot
-       e^{i \cdot \left( 2 \pi f_\text{lo,1} t + \varphi_\text{lo,1} \right)}
+       e^{j \cdot \left( 2 \pi f_\text{lo,1} t + \varphi_\text{lo,1} \right)}
        \cdot
        S_\text{in,2}^\ast \cdot
-       e^{-i \cdot \left( 2 \pi f_\text{lo,2} t + \varphi_\text{lo,2} \right)} \nonumber \\
+       e^{-j \cdot \left( 2 \pi f_\text{lo,2} t + \varphi_\text{lo,2} \right)} \nonumber \\
     &= S_\text{in,1} \cdot S_\text{in,2}^\ast \cdot
-       e^{i \cdot \left(
+       e^{j \cdot \left(
          2 \pi (f_\text{lo,1} - f_\text{lo,2}) t
          + \varphi_\text{lo,1} - \varphi_\text{lo,2}
        \right)} \nonumber \\
     \label{eq:ccmpoff}
     &= S_\text{in,1} \cdot S_\text{in,2}^\ast \cdot
-       e^{i \cdot \left(
+       e^{j \cdot \left(
          2 \pi \Delta f_\text{lo} t
          + \Delta \varphi_\text{lo}
        \right)}
@@ -255,7 +248,7 @@ in sampling time.
   were downconverted using two \gls{losig} signals
   with respective frequencies of $f_\text{lo,1}$ and
   $f_\text{lo,2}$ and phases of $\varphi_\text{lo,1}$
-  and $\varphi_\text{lo,2}$ the difference between
+  and $\varphi_\text{lo,2}$ the difference of
   these frequencies and phases will also be present
   in the resulting phase difference $\Delta \varphi$,
   as shown in equation \ref{eq:ccmpoff}. \\
@@ -275,22 +268,22 @@ in sampling time.
   delayed by the delays $t_\text{a}$ and $t_\text{b}$ before
   being processed to extract phase informations.
 
-  These delays are introduced by unmached cable lengths
+  These delays are introduced by unmached cable lengths,
   causing runtime differences, digitizing delays and
   time the samples spend in memory buffers. \\
 
   When these delayed signals are fourier transformed the
   delays result in rotating signal phases
   \cite[p. 802]{bronstein2016}, as seen in equation
-  \ref{eq:tdiffrot}, where $S_\text{in}(i \omega)$ is the fourier
+  \ref{eq:tdiffrot}, where $S_\text{in}(j \omega)$ is the fourier
   transformation of $s_\text{in}(t)$.
 
   \begin{align}
     \label{eq:tdiffrot}
     \mathcal{F} \left\{ s_\text{in}(t - t_\text{a}) \right\}
-    = e^{i \omega t_\text{a}} S_\text{in}(i \omega) \\
+    = e^{j \omega t_\text{a}} S_\text{in}(j \omega) \\
     \mathcal{F} \left\{ s_\text{in}(t - t_\text{b}) \right\}
-    = e^{i \omega t_\text{b}} S_\text{in}(i \omega) \nonumber
+    = e^{j \omega t_\text{b}} S_\text{in}(j \omega) \nonumber
   \end{align}
 
   When the phase difference between these two fourier
@@ -302,14 +295,14 @@ in sampling time.
     \mathcal{F} \left\{ s_\text{in}(t - t_\text{a}) \right\} \cdot
     \mathcal{F} \left\{ s_\text{in}(t - t_\text{a}) \right\}^\ast
     &=
-    e^{ i \omega t_\text{a}} S_\text{in}(i \omega) \cdot
-    e^{-i \omega t_\text{b}} S_\text{in}^\ast(i \omega) \\
+    e^{ j \omega t_\text{a}} S_\text{in}(j \omega) \cdot
+    e^{-j \omega t_\text{b}} S_\text{in}^\ast(j \omega) \\
     &=
-    e^{ i \omega \cdot (t_\text{a} - t_\text{b})} \cdot
-    S_\text{in}(i \omega) S_\text{in}^\ast(i \omega) \\
+    e^{ j \omega \cdot (t_\text{a} - t_\text{b})} \cdot
+    S_\text{in}(j \omega) S_\text{in}^\ast(j \omega) \\
     &=
-    e^{ i \omega \cdot \Delta t} \cdot
-    S_\text{in}(i \omega) S_\text{in}^\ast(i \omega)
+    e^{ j \omega \cdot \Delta t} \cdot
+    S_\text{in}(j \omega) S_\text{in}^\ast(j \omega)
   \end{align}
 
   For small time differences $\Delta t$ the effect on the output
@@ -323,7 +316,7 @@ in sampling time.
 
 \begin{subchapter}{Common noise}
   A common assumption in communications engineering, when
-  studying MIMO-systems, is that reciever noises are
+  studying \acrshort{mimo}-systems, is that reciever noises are
   uncorrelated. \\
 
   This thesis does not use this assumtion but instead
@@ -345,18 +338,19 @@ in sampling time.
     s_\text{r,4}(t) &= s_\text{4}(t) + n_\text{4}(t) + n_\text{c}(t) \nonumber
   \end{align}
 
+  \noindent
   Possible sources of these common noise components in
-  an \gls{sdr} system could be:
+  an \gls{sdr} system can be:
 
   \begin{description}
     \item[Passband noise]
       Noise in the desired RF-Band caused by various background-radiation
-      sources received by the antennas.
+      sources, received by the antennas.
 
     \item[Baseband noise]
       Low frequency noise like power-grid radiation or EMI from e.g.
       noisy LED light fixtures that is coupled into the baseband transmission
-      lines on the receiver PCB due to insufficient shielding.
+      lines on the receiver \acrshort{pcb} due to insufficient shielding.
 
     \item[Common clock noise]
       Noise introduced into the shared clock signal used by the
@@ -364,8 +358,8 @@ in sampling time.
   \end{description}
 
   Assuming the signals $s_\text{1}$ ... $s_\text{4}$ in equation
-  \ref{eq:commonnoisensig} can be filtered out completely the equation
-  can be simplified as can seen in equation \ref{eq:commonnoise}.
+  \ref{eq:commonnoisensig} are filtered out completely the equation
+  is simplified as can seen in equation \ref{eq:commonnoise}.
 
   \begin{align}
     \label{eq:commonnoise}
@@ -376,22 +370,24 @@ in sampling time.
   \end{align}
 
   To prevent the problems stemming from time differences between processed
-  signals discussed in the previous section the time offsets have
+  signals, discussed in the previous section, the time offsets have
   to be calibrated out. \\
 
   Assuming every noise component has an autocorrelation that is zero
   for $\tau \neq 0$ and $n_\text{1}$ ... $n_\text{4}$ and $n_\text{c}$
   are uncorrelated, the correlation between
-  $n_\text{r,1}$ ... $n_\text{r,4}$ will have a maxmimum at $\tau = 0$.
+  $n_\text{r,1}$ ... $n_\text{r,4}$ will have a maxmimum at $\tau = 0$. \\
 
   The time difference between different signals can thus be
-  calculated and compensated by filtering out the signal and finding the
+  calculated and compensated by filtering out the signals and finding the
   maxmimum correlation between the receiver noises.
 \end{subchapter}
 
+\newpage
+
 \begin{subchapter}{\acrshort{music}}
   The direction finding algorithm used in this thesis
-  is very basic, to simplyfy the implementation.
+  is very basic to simplyfy the implementation.
   There are also a number of more sophisticated algorithms
   that provide better direction estimation results, be it
   by providing better resolution, noise imunity or the
@@ -476,13 +472,14 @@ in sampling time.
 
   \begin{subsubchapter}{Signal decomposition}
     To separate the noise and signal subsignals
-    MUSIC makes use of a correlation Matrix,
+    MUSIC makes use of a correlation Matrix
     that estimates the correlation between the received
     signals, and principal component analysis to
-    extract the main sources of correlation \cite{vibergottersten1991}. \\
+    extract the main sources ofcorrelation
+    \cite{vibergottersten1991} (the signals). \\
 
     A MUSIC implementation keeps track of the received signal
-    correlations in a correlation matrix $R$.
+    correlations $\rho_{i,j}$ in a correlation matrix $R$.
 
     \begin{equation}
       \bm{R} =
@@ -508,7 +505,7 @@ in sampling time.
 
     The decomposition of $R$ is shown in equation \ref{eq:pcompdecomp},
     where the diagonal elements of $\bm{D}$
-    are the eigenvalues of $\bm{R}$ and $\bm{U}$
+    are the eigenvalues of $\bm{R}$, and $\bm{U}$
     consists of its normalized, corresponding eigenvectors.
     $\bm{D}$ and $\bm{U}$ should be sorted in a way,
     that the eigenvalues are descending in value. \\
@@ -537,13 +534,13 @@ in sampling time.
 
     To calculate the \gls{music} estimation of the signal strength for
     this direction $\theta$ the evaluation function \ref{eq:musicev}
-    is used \cite[p. 12]{girdmusic} where $U_{n}$ is the $n$th
+    is used \cite[p. 12]{girdmusic} where $\vec{U}_{n}$ is the $n$th
     (noise-)eigenvector of $R$.
 
     \begin{equation}
       \label{eq:musicev}
       P(\theta)= \frac{1}{
-        \sum_{n=0}^{N-I} \left( \vec{a_{t}}(\theta) \cdot U_{n} \right)^2
+        \sum_{n=0}^{N-I} \left( \vec{a_{t}}(\theta) \cdot \vec{U}_{n} \right)^2
       }
     \end{equation}
 
@@ -556,7 +553,7 @@ in sampling time.
     the signal eigenvectors has to be orthogonal to the space spanned
     by the noise eigenvectors.
     Thus the scalar dot product of the steering vector $\vec{a_{t}}(\theta)$
-    and a noise eigenvector $U_{n}$ will be minimal if
+    and a noise eigenvector $\vec{U}_{n}$ will be minimal if
     $\vec{a_{t}}(\theta)$ is in the space spanned by the signal
     eigenvectors. \\
 

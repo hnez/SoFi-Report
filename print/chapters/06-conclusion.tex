@@ -1,5 +1,5 @@
 Unfortunately the project as a whole did not
-perform as I had hoped it would perform.
+perform as well as I had hoped it would.
 
 \noindent
 The parts that worked as expected were:
@@ -15,15 +15,15 @@ The parts that worked as expected were:
     the offset compensation \acrshort{pid}-controllers in the frequency domain.
 
   \item
-    The sample-exact time compensation works as expected and
-    only requires a few iterations to sucessfuly lock onto
+    The sample-exact time compensation worked as expected and
+    only required a few iterations to sucessfuly lock onto
     the correct time-offset.
 
   \item
     The sub-sample time compensation and tuner phase
     offset compensation mostly worked.
     When the number of found noise-points upon startup
-    were too small, the controllers may failed to lock
+    were too small, the controllers failed to lock
     correctly, as the algorithm only tried to minimize the
     offsets at these noise-points.
     The results of a failed lock can be seen in figure
@@ -35,21 +35,25 @@ The parts that worked as expected were:
              {A failed sub-sample compensation lock}
              {0.7}{H}
 
+% VISUAL HACK
+\newpage
+
 The mayor point that did not work as expected was the direction
-of arrival estimation. Possible reasons might be
+of arrival estimation. Possible reasons include
 multi-path effects in the tested frequency range
 at about $\SI{100}{\mega\hertz}$ or a more
 fundamental error in the estimation algorithm
 or its implementation. \\
 
-It is also possible that due to their proximity
+It is also possible that, due to their proximity,
 the antennas in the array interfered and acted
-as a single antenna with unkown characteristics. \\
+as a single antenna with unkown and
+possibly problematic characteristics. \\
 
 The synchronization by using common background noise
 was also not well characterized.
-Although the compensated phase diagrams looked well
-formed there might have been a resdual systematic
+Although the compensated phase diagrams looked well-formed
+there might have been a residual systematic
 compensation error distorting the direction estimation.
 
 A setup as demonstrated in rtl\_coherent\cite{rtlcoherent}, that
@@ -65,9 +69,9 @@ The simulator replaced the \gls{sdr} devices in the
 SoFi processing chain.
 
 In the simulated case the SoFi DOA estimation
-worked as expected indicating that multi-path
+worked as expected, indicating that multi-path
 effects were indeed a problem or that the simulation
-was otherwise not accurate enough.
+was otherwise not accurate enough. \\
 
 Due to the simulation only simulating independant
 noises, as there was no reliable model for the

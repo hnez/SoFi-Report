@@ -11,14 +11,18 @@ BIBTEX= biber
 
 export TEXINPUTS
 
-all: latex.out/Report.gls latex.out/Report.bbl report
+all: stepone latex.out/Report.gls latex.out/Report.bbl steptwo
 
-.PHONY: report
-report:
-	${LATEXRUN} --latex-cmd ${LUALATEX} --bibtex-cmd ${BIBTEX} --bibtex-args "--input-directory  ../" --verbose-cmds Report.tex
+.PHONY: stepone
+stepone:
+	${LATEXRUN} --latex-cmd ${LUALATEX} --bibtex-cmd ${BIBTEX} --bibtex-args "--input-directory ../" Report.tex
+
+.PHONY: steptwo
+steptwo:
+	${LATEXRUN} --latex-cmd ${LUALATEX} --bibtex-cmd ${BIBTEX} --bibtex-args "--input-directory ../" Report.tex
 
 latex.out/Report.gls: latex.out/Report.aux
 	cd latex.out; makeglossaries Report
 
 latex.out/Report.bbl: latex.out/Report.bcf
-	cd latex.out; biber --input-directory ../ Report.bcf
+	cd latex.out; ${BIBTEX} --input-directory ../ Report.bcf

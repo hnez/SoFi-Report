@@ -14,16 +14,16 @@ to the host computer, making it a receive-only \gls{sdr}. \\
 
 Most \gls{doa} algorithms require tight synchronization between
 the receiving units in time and frequency. To meet these requirements
-\gls{doa} rigs usually employ custom hardware and/or a dedicated
-reference signal source. \\
+\gls{doa} rigs usually employ custom hardware and/or dedicated
+reference signal sources. \\
 
 To explore the minimal requirements for a sucessful synchronization,
 the rig at hand uses only minimal hardware modifications to
 the stock USB dongles to lock the receiver
-frequencies to prevent phase drifting. \\
+frequencies and to prevent phase drifting. \\
 
 The rig also does not use a dedicated reference signal
-for timing synchronization but instead relies on correlations
+for timing synchronization, but instead relies on correlations
 in the noise-floor of the receivers to synchronize them
 using the noise cross-correlation. \\
 

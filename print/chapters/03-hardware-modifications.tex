@@ -1,5 +1,5 @@
 Figure \ref{img:block_sdr_dongle} shows a block
-diagram of one of the receivers dongles that where used
+diagram of one of the receiver dongles that where used
 in this project.
 The two main components on the dongle are a
 \texttt{R820T2} tuner IC
@@ -16,16 +16,16 @@ The crystal used on the hardware at hand
 operates at a frequency of \SI{28.8}{\mega\hertz}.
 The tuner uses this frequency to derive the
 local oscillator signal used for mixing down
-the RF-signal using a phase locked loop.
+the RF-signal using a \gls{pll}.
 It also provides a clock output pin that
 outputs a triangle waveform at the crystals
 oscillation frequency \cite{r820t2datasheet}. \\
 
-The given USB-dongles uses this clock output signal
+The given USB-dongles use this clock output signal
 as a clock input for the \texttt{RTL2832U}
 receiver IC that handles the analog to digital
 conversion and USB-communication.
-The ADC sampling frequency is also derived from
+The \gls{adc} sampling frequency is also derived from
 the tuner clock output by using a phase locked loop. \\
 
 In the basic setup four SDR dongles are used
@@ -35,21 +35,20 @@ received by these dongles they have to be tightly
 synchronized in sample-aquisition time and frequency. \\
 
 Gaining sufficient synchronization for DOA applications
-by compensating for hardware differences completely
+by compensating for hardware impairments completely
 in software was deemed unfeasible, so a hybrid
 approach was choosen that requires minimal hardware
 modifications and offloads most synchronization tasks
-to the software side. \\
-
-% TODO: Cite the guy that synchronized RTL-SDRs for
-%       radar stuff
+to the software side.
+As demonstrated in 2013 by Juha Vierinen for
+coherent radar applications \cite{rtlradar}. \\
 
 Figure \ref{img:block_sdr_dongle_chained} shows
 a schematic representation of the performed modifications.
 The clock output of one tuner IC is daisy chained to
 the clock input of the next tuner IC.
 This way all tuners derive their clock frequency
-from the same crystal while the load on any of
+from the same crystal, while the load on any of
 the clock outputs is kept minimal.
 
 To provide the input pin with the correct signal
@@ -64,7 +63,7 @@ figure \ref{img:block_sdr_dongle_chained}.
 
 The modifications that were actually performed on the
 hardware can be seen in figure \ref{img:hw_mods}.
-The dongle that contains the clock reference for
+The dongle that contains the clock source for
 the rest of the system can be seen in the top left
 image, it still contains the original
 \SI{28.8}{\mega\hertz} crystal and was only equipped
@@ -72,14 +71,14 @@ with thin wires that tap off the clock out signal
 and a ground reference. \\
 
 The next image to the right shows a dongle
-in a position in the clock distribution chain.
+in a later position in the clock distribution chain.
 The original crystal was removed an replaced with
 the RC-network shown in figure \ref{img:block_sdr_dongle_chained}.
 The network is fed by the previos dongle in the chain. \\
 
 The bottom right image in the figure shows the
 locations of the main components on the dongles.
-The signal flow in the figure is from the top right
+The signal path on the dongles is from the top right
 to the left.
 The signal enters the receiver through the antenna
 connector at the top right, is mixed-down by the
@@ -88,4 +87,4 @@ tuner-IC and digitized by the \acrshort{adc} on the left.
 \figurizefile{diagrams/annotated_hw_mods.tex}
              {img:hw_mods}
              {Hardware modifications to synchronize the clocks}
-             {0.9}{ht}
+             {0.99}{ht}

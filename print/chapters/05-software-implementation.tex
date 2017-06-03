@@ -17,16 +17,16 @@ at a lower speed.
   dongles. The communication with the dongles is performed
   by using a hardware abstraction layer for software-defined radio
   devices, that was introduced into recent versions of
-  the Linux kernel. This means, that the program should work
+  the Linux kernel \cite{v4lsdr}. This means, that the program should work
   with all \gls{sdr} devices supported in the Linux kernel,
-  as long as their clock sources are synchronized \cite{v4lsdr}.
+  as long as their clock sources are synchronized.
 
   The actual transfer of samples is performed using
   buffers, that are shared between the application and
   the kernel, to minizize the number of
   copy operations performed \cite{v4lmmap}. \\
 
-  To utilize the processing power of multi-core processors
+  To better utilize the processing power of multi-core processors
   \gls{fft} calculations are performed in one thread per
   \gls{sdr} device, distributing the load over the available cores.
 
@@ -34,12 +34,12 @@ at a lower speed.
   they are synchronized by calculating the
   cross-correlation between the per-device streams
   and discarding samples until the peak appears at a
-  sample-offset of $0$. \\
+  sample-offset of zero. \\
 
-  All the operations after the synchronization phase are
+  Every operations after the synchronization phase is
   performed in the frequency domain. \\
 
-  After the synchronization the processing threads, that
+  After the sample-exact synchronization the processing threads, that
   take the time domain samples from the shared buffers and transfer
   them into the frequency domain, are started.
 
@@ -49,14 +49,14 @@ at a lower speed.
   be averaged directly, as the current signal phase can be
   influenced by signal modulation and thus behaves randomly.
   When these stochastic samples are averaged over a sufficiently long
-  timespan they would thus cancel out. \\
+  timespan they would thus cancel out to zero. \\
 
   In order to be able to perform the necessary averaging
   and downsampling, instead of using the absolute phases
   directly from the \gls{fft}, the phase differences between the receivers
   are calulated prior to the averaging step, using complex conjugate multiplication.
   For four receivers this leads to six difference signals,
-  that are calulated according to the ecuations seen below.
+  that are calulated according to the equations shown below:
 
   \begin{equation*}
     \begin{aligned}[c]
@@ -74,7 +74,7 @@ at a lower speed.
 
   The resulting values $o_\text{1,n}$ ... $o_\text{6,n}$
   are then averaged over time to reduce the sample-rate
-  and forwarded to the next processing steps.
+  and forwarded to the next processing step.
 \end{subchapter}
 
 \begin{subchapter}{\texttt{libsofi.py}}
@@ -86,9 +86,9 @@ at a lower speed.
   than expressing the algorithms in C. \\
 
   The data-transfer from C to Python is performed using
-  a bit of glue-code that uses the Python \texttt{ctypes}
+  a bit of glue-code, that uses the Python \texttt{ctypes}
   \gls{ffi}.
-  This glue-code allows the C code to be imported
+  This glue-code allows the C backend to be imported
   into the Python code just like a native Python module.
 \end{subchapter}
 
@@ -157,8 +157,8 @@ at a lower speed.
     # edge_distances vector and the actual signal wavelength
     rel_wl= 2 * math.pi * edge_distances / wavelength
 
-    # Generate a vector of length self.dir_len an populate
-    # it with incidence angles from -π to π
+    # Generate a vector of length self.dir_len and populate
+    # it with incidence angles from -pi to pi
     test_angles= np.linspace(-math.pi, math.pi, self.dir_len)
 
     # Generate an empty target matrix
@@ -172,6 +172,9 @@ at a lower speed.
         pos_mat[idx, :]= rel_wl * np.sin(rel_angles)
   \end{lstlisting}
 
+  % VISUAL HACK
+  \newpage
+  
   Performing a matrix-vector multiplication of this modeling matrix
   and a vector consisting of the measured phase differences
   is equivalent to calculating the scalar dot product of the
@@ -200,6 +203,9 @@ at a lower speed.
   angle of incidence of the signal.
 \end{subchapter}
 
+% VISUAL HACK
+\newpage
+
 \begin{subchapter}{\texttt{sofi\_ui.py}}
   The Visualization of the direction estimation is performed
   using the \texttt{matplotlib} and \texttt{Gtk+} software-libraries.
@@ -210,6 +216,11 @@ at a lower speed.
                {0.5}{H}
 
   Figure \ref{img:sofi_ui} shows the SoFi interface.
-  The bottom half displays the amplitude spectrum and
-  the top half displays the direction estimation data.
+  The bottom half displays the phase spectra and
+  the top half displays the direction estimation data. \\
+
+  The diameter of the circles in the top plot correspond
+  to the signal strengths of the analyzed signals.
+  The orientations of the circles indicate the direction
+  of arrival of the corresponding signals.
 \end{subchapter}

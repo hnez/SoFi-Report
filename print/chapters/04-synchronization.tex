@@ -20,7 +20,7 @@ order they are performed. \\
   a lot bigger compared to the sampling rate, as the
   differences in startup time are usually in the range
   of hundreds of milliseconds and the sampling rates are
-  in the order of a couple kiloherz to a few megaherz. \\
+  in the order of a couple kilohertz to a few megahertz. \\
 
   \figurizefile{diagrams/samples_actual_time.tex}
                {img:samples_actual_time}
@@ -39,14 +39,14 @@ order they are performed. \\
 
   In order to be able to analyze phase differences between
   the signals later on, the receivers have to be synchronized to
-  a accuracy of within a couple sampling times.
+  an accuracy of within a couple sampling times.
 
   The necessary synchronization is implemented by discarding
   all samples in the device buffers that were recorded
   before every device was recording samples.
 
   This step is demonstrated in figure \ref{img:samples_synchronized_time}.
-  Receiver two was the last receiver to be started,
+  Receiver two was the last receiver to start aquiring samples,
   thus every sample recorded before receiver two was aquirirng
   data was discarded.
 
@@ -64,9 +64,10 @@ order they are performed. \\
   occurs at a time-offset of zero. \\
 
   To facilitate calculating the cross correlation over
-  more than $\SI{100}{\kilo\relax}$ samples, a \acrlong{fft}
+  more than $\SI{100}{\kilo\relax}$ samples (a conservative
+  upper bound of the sample offsets), a \acrlong{fft}
   is used to transfer the calculation into the frequency domain.
-  The transformed cross-correlation calculation can be
+  The transformed cross-correlation calculation is demonstrated
   seen in equation \ref{eq:fast_cross_correlation}, where
   $\mathcal{F}$ denotes the fourier transformation,
   $\mathcal{F}^{-1}$ is the inverse fourier transformation
@@ -89,8 +90,8 @@ order they are performed. \\
 
   This compensation step only has to be performed
   once upon startup, as the sampling clocks are
-  derived via \glspl{pll} from the same base clock,
-  due to the hardware modifications.
+  derived via \glspl{pll} from the same base clock
+  (due to the hardware modifications).
   Thus, as long as the \glspl{pll} stay locked,
   the \glspl{adc} will produce samples at the
   same rate and will not drift apart.
@@ -110,7 +111,7 @@ order they are performed. \\
   in order to be able to shift the signals by less than
   one sample. \\
 
-  Instead, the input signals are now transferred to the frequency domain
+  Instead, the input signals are now transferred to the
   frequency domain. Figure \ref{img:preprocessing_chain}
   shows the steps that are performed for every receiver pair prior to
   the sub-sample synchronization. \\
@@ -123,7 +124,7 @@ order they are performed. \\
   The input streams from the receivers are first delayed
   by the number of samples determined in the previous
   synchronization step, so that samples recoreded at the
-  same time are in the same position in the steams. \\
+  same time are in the same position in the streams. \\
 
   Next the samples are transformed to the frequency domain
   using \glspl{fft}.
@@ -134,7 +135,7 @@ order they are performed. \\
   multiplied element-wise. This complex conjugate multiplication
   yields a vector of complex numbers which contain the
   phase differences for the observed frequencies in
-  their argument. As can be seen in equation
+  their argument. As shown in equation
   \ref{eq:multiply_cplx_conj}. \\
 
   \begin{equation}
@@ -150,17 +151,17 @@ order they are performed. \\
     \end{split}
   \end{equation}
 
+  \figurizefile{diagrams/complex_conjugate_mul.tex}
+               {img:complex_conjugate_mul}
+               {Complex conjugate multiplication of phase shifted signals}
+               {0.6}{ht}
+
   The effect of this operation on the same complex signal
   shifted in phase is shown in figure \ref{img:complex_conjugate_mul} \\
 
   In order to reduce the processing load on the following stages,
   the resulting complex values are then low pass filtered by
   averaging and subsequently decimated.
-
-  \figurizefile{diagrams/complex_conjugate_mul.tex}
-               {img:complex_conjugate_mul}
-               {Complex conjugate multiplication of phase shifted signals}
-               {0.6}{ht}
 
   As these operations are performed for every pair
   of antennas in the array, $n_\text{ant}$ input
