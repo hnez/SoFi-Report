@@ -7,11 +7,14 @@ at a lower speed.
 \begin{subchapter}{\texttt{libsofi.c}}
   As the preprocessing code has to deal with samples
   before the first downsamling stage, the data rates to be
-  processed are rather high.
+  processed are rather high
+  (about $\SI{2}{\mega\sample\per\second}$ per receiver).
   In order to be able to run on low-range computing hardware
   this part of the processing chain is written in C and
-  uses the highly optimized \texttt{fftw3} and \texttt{volk}
-  software-libraries, for accelerated \gls{fft} and vector operations. \\
+  uses the highly optimized \texttt{fftw3} \cite{fftwweb}
+  and \texttt{volk} \cite{volkweb}
+  software-libraries, for accelerated \gls{fft} calculations
+  and vector operations. \\
 
   The program flow starts off by initializing the \gls{sdr}
   dongles. The communication with the dongles is performed
@@ -31,7 +34,7 @@ at a lower speed.
   \gls{sdr} device, distributing the load over the available cores.
 
   Once the \gls{sdr} devices are initialized and acquiring samples
-  they are synchronized by calculating the
+  they are synchronized in time by calculating the
   cross-correlation between the per-device streams
   and discarding samples until the peak appears at a
   sample-offset of zero. \\
@@ -44,12 +47,14 @@ at a lower speed.
   them into the frequency domain, are started.
 
   For every receiver $m$ the \gls{fft} calculation yields phase
-  and magnitude information for $1024$ frequency bins.
+  and magnitude information for $N_\text{FFT}$ frequency bins.
   The values $i_\text{m,n}$ in these frequency bins can not
   be averaged directly, as the current signal phase can be
   influenced by signal modulation and thus behaves randomly.
   When these stochastic samples are averaged over a sufficiently long
   timespan they would thus cancel out to zero. \\
+
+  % TODO: The paragraph above sucks -^
 
   In order to be able to perform the necessary averaging
   and downsampling, instead of using the absolute phases
@@ -79,7 +84,7 @@ at a lower speed.
 
 \begin{subchapter}{\texttt{libsofi.py}}
   After the downsampling is performed in the backend code
-  the data rate is greatly reduced. Further processing
+  the data rate is reduced by a factor of more than $100$. Further processing
   can thus be performed in Python, an interpreted scripting
   language that, in conjunction with numpy, a software library for
   numeric calulations, makes writing \acrshort{dsp} task easier
@@ -93,8 +98,9 @@ at a lower speed.
 \end{subchapter}
 
 \begin{subchapter}{\texttt{direction.py}}
-  The direction estimation code uses the \texttt{numpy} and
-  \texttt{scipy} libraries for easy and efficient
+  The direction estimation code uses the \texttt{numpy}
+  \cite{numpyweb} and
+  \texttt{scipy} \cite{scipyweb} libraries for easy and efficient
   vector operations and signal processing tasks. \\
 
   This part of the processing chain operates completely
@@ -110,7 +116,7 @@ at a lower speed.
   The compensation works by first finding the local minima in
   the amplitude spectrum, as seen in figure \ref{img:annotated_fft_mag},
   these are the frequencies with the lowest signal strength
-  and can thus be assumed to be dominated noise.
+  and can thus be assumed to be dominated by noise.
 
   As discussed before noise carries no direction
   information and the phase difference between the
@@ -132,14 +138,15 @@ at a lower speed.
 
   In addition to finding the frequencies, that are dominated
   by noise, the program also finds peaks in received signal strength.
-  These peaks correspond to the center frequencies of the currently active
-  transmitters.
+  These peaks correspond to the parts of the spectrum, that are
+  occupied by transmitters.
   These frequencies are then added to a list of sources to be
   analyzed. \\
 
   As the direction estimation model depends on the
-  signal wavelength, the program generates a modeling matrix
-  for each of these frequencies. \\
+  signal wavelength, the program generates a modelling matrix
+  for every frequency that is associated with a distinct
+  signal source. \\
 
   The code, that generates these matrices, can be seen in
   listing \ref{lst:direction_model}.
@@ -155,7 +162,7 @@ at a lower speed.
     # Calculate "relative wavelengths" (in radians)
     # based on the antenna distances in the
     # edge_distances vector and the actual signal wavelength
-    rel_wl= 2 * math.pi * edge_distances / wavelength
+    rel_wl= 2 * np.pi * edge_distances / wavelength
 
     # Generate a vector of length self.dir_len and populate
     # it with incidence angles from -pi to pi
@@ -174,7 +181,7 @@ at a lower speed.
 
   % VISUAL HACK
   \newpage
-  
+
   Performing a matrix-vector multiplication of this modeling matrix
   and a vector consisting of the measured phase differences
   is equivalent to calculating the scalar dot product of the

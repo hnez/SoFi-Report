@@ -3,6 +3,8 @@ hardware, additional synchronization steps are
 performed. These steps are now presented in the
 order they are performed. \\
 
+
+
 \begin{subchapter}{Sample-exact time compensation}
   The first offset that needs to be compensated stems
   from the fact, that the SDR-dongles do not start
@@ -109,7 +111,7 @@ order they are performed. \\
   Compensating these offsets in the time domain would
   require fractionally resampling the incoming data streams
   in order to be able to shift the signals by less than
-  one sample. \\
+  one sample.
 
   Instead, the input signals are now transferred to the
   frequency domain. Figure \ref{img:preprocessing_chain}

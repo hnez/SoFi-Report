@@ -23,8 +23,8 @@ oscillation frequency \cite{r820t2datasheet}. \\
 
 The given USB-dongles use this clock output signal
 as a clock input for the \texttt{RTL2832U}
-receiver IC that handles the analog to digital
-conversion and USB-communication.
+receiver IC, that handles USB-communication
+and analog to digital conversion, using an 8-bit \gls{adc} .
 The \gls{adc} sampling frequency is also derived from
 the tuner clock output by using a phase locked loop. \\
 
@@ -37,9 +37,9 @@ synchronized in sample-aquisition time and frequency. \\
 Gaining sufficient synchronization for DOA applications
 by compensating for hardware impairments completely
 in software was deemed unfeasible, so a hybrid
-approach was choosen that requires minimal hardware
+approach was chosen that requires minimal hardware
 modifications and offloads most synchronization tasks
-to the software side.
+to the software domain.
 As demonstrated in 2013 by Juha Vierinen for
 coherent radar applications \cite{rtlradar}. \\
 
@@ -52,17 +52,17 @@ from the same crystal, while the load on any of
 the clock outputs is kept minimal.
 
 To provide the input pin with the correct signal
-levels a DC blocking RC network has to be used
-on the input pins as shown in
-figure \ref{img:block_sdr_dongle_chained}.
+levels a DC-blocking RC network has to be used,
+as specified in the datasheet \cite{r820t2datasheet}
+and shown in figure \ref{img:block_sdr_dongle_chained}.
 
 \figurizefile{diagrams/sdr_clocks_chained.tex}
              {img:block_sdr_dongle_chained}
              {Block diagram of a chained SDR-Dongle}
              {0.7}{ht}
 
-The modifications that were actually performed on the
-hardware can be seen in figure \ref{img:hw_mods}.
+The modifications, as performed on the
+hardware, can be seen in figure \ref{img:hw_mods}.
 The dongle that contains the clock source for
 the rest of the system can be seen in the top left
 image, it still contains the original

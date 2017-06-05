@@ -5,6 +5,7 @@
   (pierce_not.out) to[short, -*]
   +(0, -0.5) coordinate(pierce_out) to[short]
   +(-2, 0) to[piezoelectric]
+  node[left]{\small Crystal}
   +(0, 2.5) to[short]
   +(2, 0) to[short]
   (pierce_not.in);
@@ -24,7 +25,8 @@
   % Mix feed bottom
   \draw
   (mix_pll_out) to[short]
-  (mixer_q.2) node[inputarrow, rotate=45]{};
+  (mixer_q.2) node[inputarrow, rotate=45]{}
+  +(0, -0.2) node[below]{\small $+\SI{90}{\degree}$};
 
   % Mix feed top
   \draw
@@ -90,7 +92,13 @@
   (8.75, 7.25) --
   (8.75, 0.25);
 
+  % Devices
   \draw
   (4.375, 0.25) node[below]{R820T2}
   (10, 0.25) node[below]{RTL2832U};
+
+  % Frequencies
+  \draw
+  (4.375, 7.25) node[above]{RF}
+  (10, 7.25) node[above]{baseband};
 \end{tikzpicture}

@@ -31,7 +31,8 @@
 
   \draw
   (mix_pll_out) to[short]
-  (mixer_q.2) node[inputarrow, rotate=45]{};
+  (mixer_q.2) node[inputarrow, rotate=45]{}
+  +(0, -0.2) node[below]{\small $+\SI{90}{\degree}$};
 
   \draw
   (mix_pll_out) to[short, *-]
@@ -102,4 +103,9 @@
   \draw
   (4.375, 0.25) node[below]{R820T2}
   (10, 0.25) node[below]{RTL2832U};
+
+  % Frequencies
+  \draw
+  (4.375, 7.25) node[above]{RF}
+  (10, 7.25) node[above]{baseband};
 \end{tikzpicture}
