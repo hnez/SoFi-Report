@@ -1,0 +1,73 @@
+In the initial SoFi implementation I tried to avoid as many
+pitfalls as possible, I stuck to programming languages and
+libraries I already knew fairly well and preferred algorithms
+and implementations that felt intuitive rather than relying
+on well studies approaches presented in academic publications. \\
+
+After gaining some experience using that approach I would
+structure a second implementation quite differently. \\
+
+Firstly I would ditch most of the custom C and Python code
+and replace most of the signal processing code with implementations
+from the GnuRadio framework.
+
+The primary concerns for not choosing GnuRadio in the first
+place were lacking support for current versions of Python
+(Python 3.X) and a steep learning curve, especially with respect to writing
+custom processing steps.
+Nevertheless the flexibility of quickly plugging in
+filters and other processing steps, that are known to work,
+far outweigh the initial time spent getting used to
+the framework. \\
+
+Secondly I would introduce a dedicated signal source
+for synchronization purposes, possibly a wideband noise
+source as demonstrated in rtl\_coherent \cite{rtlcoherent},
+as relying on characteristics of background noise
+introduces a lot of unkowns, making characterization
+of the results and constructing an usefull simulation
+quite difficult.
+
+A well characterized reference source would also allow
+characterizing the current approach of using background
+noise as a means of synchronization by comparing the end-to-end
+quality of the \gls{doa} estimation results. \\
+
+I would further use the \gls{music} algorithm in a new implementation,
+as it is well studied and known to provide better results
+with fewer antennas than more naive algorithms,
+like the one used in this thesis \cite{vibergottersten1991}. \\
+
+As working with narrowband signals makes the compensation
+of hardware impairments and using \gls{music} easier I
+would still employ an \gls{fft}, as shown in
+figure \ref{img:fft_music_setup}.
+
+\figurizefile{diagrams/fft_music_setup.tex}
+             {img:fft_music_setup}
+             {A hybrid \gls{fft} and \gls{music} based approach}
+             {0.9}{ht}
+
+The system in the figure uses an array of two antennas and
+analyzes the \gls{doa} of signals in four frequency bins. \\
+
+The \gls{fft} is used as a filter bank to
+separate the incomming stream into $n$ substreams
+of $1/n$ the original sample rate.
+
+As the $n$ substreams are narrowband, the
+phase errors introduced by the \gls{losig} phase
+and the sub-sample timing offsets can be compensated
+by a term $\Delta \varphi(\omega)= \omega \cdot m + b$
+as previously discussed in this thesis. \\
+
+For every substream a cross-correlation matrix
+of the receivers is calculated and used to estimate
+the direction of arrival of the signal in
+the corresponding frequency bin by using
+the \gls{music} algorithm. \\
+
+The number of frequency bins should be large enough
+that one bin is at most occupied by one signal and,
+that the narrowband assumtion, when compensation
+phase errors, still holds.
