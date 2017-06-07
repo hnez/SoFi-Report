@@ -1,7 +1,5 @@
 <style type="text/css">
   body {
-    background-color: #2f2f2f;
-    color: white;
     max-width: 70em;
     margin: 0 auto;
   }
