@@ -1,29 +1,62 @@
-% TODO: reiterate what was done
+The planned goal of this thesis was to explore if
+a a low-cost \gls{doa} rig could be built by
+utilizing comodity \gls{sdr} receivers
+and to analyze if common background-noise
+can be used as a sufficient means of
+synchronization for \gls{doa} applications. \\
 
-Unfortunately the project as a whole did not
-perform as well as I had hoped it would.
+To check these hypotheses a hardware-setup was
+assembled, consisting of four frequency-locked
+rtl\_sdr receivers and the four corrseponding
+antennas spread out on a plane. \\
 
-\noindent
-The parts that worked as expected were:
+Software components were written that used
+cross-correlations of receiver data-streams
+to synchronize samples in time and
+performed further compensations to
+mitigate hardware impairments stemming from
+the independent receivers. \\
+
+Finally a basic \gls{doa} algorithm was implemented
+that utilized an \gls{fft} to separate the
+analyzed spectrum into multiple frequency bins.
+The phase differences of the receivers in these
+frequency bins were used directly to derive
+the \acrlong{doa} of the impinging signals. \\
+
+Within the processing time of this thesis no
+conclusion could be found on whether a
+working rig could be implemented with the
+specified constraints.
+
+The resolution and accuracy of the measured
+\gls{doa} results were rather bad.
+It is, as of now, unkown if this was due to
+the bad performance of the algorithm used,
+other implementation errors or a conceptional
+problem of the receivers used. \\
+
+Following are some aspects of the system that
+were determined to be working as expected:
 
 \begin{itemize}
   \item
     The hardware modifications to lock the input clocks
     to the same source. \\
     There was a remaining slow drift in
-    the signal phase, that was most likely due to a bit of jitter
+    the signal phase, that was assumed to be most likely due to jitter
     in the \acrshort{losig}-frequency generating \glspl{pll}.
-    But due to the drift being slow it can easily be compensated by
-    the offset compensation \acrshort{pid}-controllers in the frequency domain.
+    But, due to this drift being slow, it can easily be compensated by
+    the offset-compensating \acrshort{pid}-controllers in the frequency domain.
 
   \item
     The sample-exact time compensation worked as expected and
     only required a few iterations to sucessfuly lock onto
-    the correct time-offset.
+    the correct time-offset. To within sufficiently few samples.
 
   \item
-    The sub-sample time compensation and tuner phase
-    offset compensation mostly worked.
+    The sub-sample time compensation and tuner-phase
+    offset compensation were assumed to be mostly working.
     When the number of found noise-points upon startup
     were too small, the controllers failed to lock
     correctly, as the algorithm only tried to minimize the
@@ -35,17 +68,13 @@ The parts that worked as expected were:
 \figurizefile{diagrams/lock_fail}
              {img:failed_lock}
              {A failed sub-sample compensation lock}
-             {0.7}{H}
+             {0.6}{ht}
 
-% VISUAL HACK
-\newpage
-
-The mayor point that did not work as expected was the direction
-of arrival estimation. Possible reasons include
+Possible reasons for the bad \gls{doa} performance include
 multi-path effects in the tested frequency range
-at about $\SI{100}{\mega\hertz}$ or a more
-fundamental error in the estimation algorithm
-or its implementation. \\
+at about $\SI{100}{\mega\hertz}$, a conceptually bad
+performance of the \gls{doa}-estimation algorithm used
+or implementation mistakes. \\
 
 It is also possible that, due to their proximity,
 the antennas in the array interfered and acted
@@ -56,7 +85,7 @@ The synchronization by using common background noise
 was also not well characterized.
 Although the compensated phase diagrams looked well-formed
 there might have been a residual systematic
-compensation error distorting the direction estimation.
+compensation error, distorting the direction estimation.
 
 A setup as demonstrated in rtl\_coherent\cite{rtlcoherent}, that
 utilizes a dedicated wideband noise-source, would
