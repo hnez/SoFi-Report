@@ -123,7 +123,7 @@ Synchronize them
 
 _3rd attempt_
 
-![Clock SRC v3](diagrams/annotated_hw_mods.svg)
+![SDR Clocks Chained](diagrams/sdr_clocks_chained.svg)
 
 - Used the tuner's clock output
 - Receivers are daisy-chained with short wires
@@ -133,6 +133,16 @@ _3rd attempt_
 
 Synchronize them
 ================
+
+_3rd attempt_
+
+![Clock SRC v3](diagrams/annotated_hw_mods.svg)
+
+- Used the tuner's clock output
+- Receivers are daisy-chained with short wires
+- No more signal integrity issues
+
+---
 
 _Drifting_ between the receivers is fixed
 
@@ -214,7 +224,6 @@ Frequency domain
   [complex conjugate multiplication][code_phase_difference]
 - Downsample by [averaging][code_phase_average]
   the phase differences
-
 
 ---
 
@@ -302,7 +311,39 @@ Split into two parts:
 Implementation
 ==============
 
-TODO
+To estimate the direction of arrival the program:
+
+- Generates a vector of expected phase differences for
+  every input direction to test
+- Calculate the scalar dot product of these vectors
+  and a vector of the measured phase vectors
+- The test vector that is parralel to the measured phase
+  vector corresponds to the direction of arrival
+- The scalar dot product has a maximum if both vectors
+  are parallel
+
+---
+
+Implementation
+==============
+
+    !Python
+    def gen_position_matrix(self, wavelength):
+        …
+        for (idx, test_angle) in enumerate(test_angles):
+            rel_angles= edge_angles + test_angle
+            pos_mat[idx, :]= rel_wl * np.sin(rel_angles)
+
+[…][code_gen_dir_matrix]
+
+    !Python
+    def get_direction_info(self, phases,
+                           idx_start, idx_end):
+        …
+        pmat= self.get_position_matrix(wl_start, wl_end)
+        return(pmat @ phase_vector)
+
+[…][code_get_dir_info]
 
 ---
 
@@ -334,3 +375,6 @@ The thesis and this presentation are released under the GNU FDLv1.3:
 
 [code_phase_difference]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/libsofi/combiner.c#L128
 [code_phase_average]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/libsofi/combiner.c#L133
+
+[code_gen_dir_matrix]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/direction.py#L84
+[code_get_dir_info]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/direction.py#L127

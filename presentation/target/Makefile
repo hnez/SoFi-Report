@@ -6,9 +6,9 @@ NOTES_COMPILER= pandoc
 all: sofi.html notes.html
 
 sofi.html: ../src/sofi.md
-	cp $(<) $*.md
-	$(SLIDE_COMPILER) -c -d $(@) -r -t $(THEME_DIR) $*.md
-	rm $*.md
+	cp $(<) sofi.md
+	$(SLIDE_COMPILER) -c -d $(@) -r -t $(THEME_DIR) sofi.md
+	rm sofi.md
 
 notes.html: ../src/notes.md style.html.inc
 	$(NOTES_COMPILER) -o $@ $< -H style.html.inc

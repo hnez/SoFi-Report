@@ -15,13 +15,11 @@
     font-size: 1.2em;
     margin: 0.1em 0.5em;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.81);
   }
 
   h3 {
     margin: 0.1em 1em;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.71);
   }
 
   p {
@@ -46,5 +44,9 @@
 
   video {
     width: 45em;
+  }
+
+  em {
+    color: gray;
   }
 </style>
