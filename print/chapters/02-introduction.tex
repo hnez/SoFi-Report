@@ -35,14 +35,14 @@ that have to be overcome and will be discussed in
 this thesis, like different LO frequencies and differences
 in sampling time.
 
-\begin{subchapter}{\gls{doa} estimation}
+\begin{subchapter}{\gls{doa} principle}
   Figure \ref{img:phased_array} visualizes how signal phases
   can be used to estimate the \acrlong{doa} of a signal
   in the far field. \\
 
   \figurizefile{diagrams/phased_array.tex}
                {img:phased_array}
-               {Array of four antennas with a sender to the far right}
+               {Array of four antennas with a transmitter to the far right}
                {0.7}{ht}
 
   The diagram shows four antennas spaced out on a plane
@@ -86,22 +86,59 @@ in sampling time.
                {0.7}{ht}
 \end{subchapter}
 
-\begin{subchapter}{The effect of noise}
-  % TODO: This chapter still sucks
+\begin{subchapter}{Noise influence}
+  It is assumed that some of the noises received
+  by the receivers stem from external physical
+  phenomena.
+  These phenomena could be e.g. transients, creating
+  wide-band pulses.
 
-  There is however a mayor drawback to the DOA-estimation
-  technique discussed above: it does not work in the presence of noise. \\
+  It is also assumed, that the probability
+  of these noise-generating events is equal for every direction
+  of incidence on the antenna array. \\
 
-  This is because noise can be assumed to have no distinct source.
-  This means, that in the presence of noise the measured phase differences
-  will always be smaller than those assumed in figure \ref{img:angle_two_receivers}
-  by a factor $f$.
-  Luckyly the effect of the noise can be assumed to be equal for
-  all antenna pairs and thus the factor $f$ can also be assumed to be equal. \\
+  If these events would occur sporadically and the analyzed
+  timeframe for each \gls{doa} estimation was small,
+  each one of them would yield a distinct \gls{doa} estimation
+  result, according to the direction of incidence. \\
 
-  Thus the algorithm used for direction estimation
-  should be able to work with relative phases that are
-  scaled by a common noise factor.
+  In this thesis the time per \gls{doa} estimation
+  is assumed to be large with respect to the mean
+  time between these events.
+  Thus the direction information results of these
+  events can be assumed to cancel out. \\
+
+  A phase difference between two receivers does,
+  as shown in the previous section, imply a distinct
+  direction of arrival.
+  But, as the direction information of the
+  noise-signals is expected to cancel out when
+  analyzed over a long time-span, the phase differences
+  also have to cancel out. \\
+
+  In a competely noise-based signal the measured phase
+  differences would thus be, on average, zero.
+
+  In a compelely noise-free signal the phase differences
+  would, as shown in the previous section, correspond to the
+  antenna distances, wavelength of the signal and the angle
+  of incidence.
+
+  It is assumed, that in cases where a signal is
+  overlayed by noise, both effects will contribute to the measurement,
+  yielding phase differences that are an average of
+  the expected value in the noise-free case and the
+  expected value (zero) in the noise-only case, weighted by
+  the \gls{snr}. \\
+
+  The \gls{doa} estimation algorithm will thus
+  have to be able to work with phase differences
+  that were scaled by a factor $f$ that depends
+  on the \gls{snr}.
+  As the \gls{snr} of the closely-spaced antennas
+  can be assumed to be approximately the same,
+  the factor $f$ can also be assumed to be approximately
+  equal for every antenna pair.
 \end{subchapter}
 
 \begin{subchapter}{Basic direction estimation}
