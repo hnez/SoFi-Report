@@ -354,7 +354,23 @@ _conclusion_
 Conclusion
 ==========
 
-TODO
+![SoFi UI](diagrams/sofi_ui.svg)
+
+- Directional resolution is not great
+- Sometimes fails to lock
+- Behaves strangely when indoors (reflections?)
+- Bad code quality
+
+---
+
+Outlook
+=======
+
+Use FFT to split signal into bins
+
+Use MUSIC to analyze these bins
+
+![FFT and MUSIC based setup](diagrams/fft_music_setup.svg)
 
 ---
 

@@ -465,5 +465,52 @@ mehr so das Gegenteil.
 Die Implementierung nutzt statt mehrerer Testvektoren
 eine Testmatrix, verhält sich aber an sich wie erwähnt.
 
+----
+
 Conclusion
 ==========
+
+Funktioniert nicht so richtig toll:
+
+- Richtungsausgabe ist sehr weich, gute Peaks gibt es da nicht
+- Grobe Synchronisation funktioniert größtenteils
+- Ob die feine synchronisation durch Hintergrundrauschen
+  funktioniert ist nicht wirklich geklärt
+- Tests mit Sender in direkter Umgebung zeigen oft komische
+  Resultate. Reflexionen/algorithmisch was verkehrt?
+- Durch rumprobieren am Ende hat der Code gelitten
+
+----
+
+Outlook
+=======
+
+Wenn ich noch einmal neu an das Problem herangehen würde:
+
+- So wenig wie möglich selbst implementieren, GnuRadio nutzen
+- Als gut bekannte Algorithmen nutzen:
+- MUSIC performt besser als einfachere Algorithmen, aber:
+    - Ist schwer zu verstehen
+    - Meist nur theoretisch/in Simulation untersucht,
+      vieles wird ignoriert: Unterschiedliche Wellenlängen,
+      Offsets der Receiver
+- Deshalb hybriden Ansatz nutzen:
+    - Eingangssignal mit FFT in schmalbandige Untersignale unterteilen,
+      wie bei OFDM
+    - Empfängeroffsets wie gehabt kompensieren durch Phasendrehen
+      (geht, weil schmalbandig)
+    - Schmalbandige Untersignale mit MUSIC verarbeiten
+    - MUSIC braucht Aussage über Anzahl der Signale,
+      ist so ziemlich sicher 1 (für FM-Radio)
+
+----
+
+Quellcode
+=========
+
+Alles online, Software, Bericht, Präsentation
+und der jeweilige Quellcode
+
+----
+
+*Demo machen*
