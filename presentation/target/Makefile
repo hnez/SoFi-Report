@@ -12,3 +12,7 @@ sofi.html: ../src/sofi.md
 
 notes.html: ../src/notes.md style.html.inc
 	$(NOTES_COMPILER) -o $@ $< -H style.html.inc
+
+.PHONY: public
+public: all
+	rsync -av . tut@zerforscht.de:public_html/vtp
