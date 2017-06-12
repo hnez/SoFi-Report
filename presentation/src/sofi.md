@@ -373,7 +373,7 @@ The software sources are released under the GNU GPLv3 license:
 
 <div style="border-top: 1px solid rgba(255, 255, 255, 0.17); margin-top: 1em; padding-top: 1em;"></div>
 
-The thesis and this presentation are released under the GNU FDLv1.3:
+The [thesis][www_thesis] and this presentation are released under the GNU FDLv1.3:
 
 [github.com/hnez/SoFi-Report](https://github.com/hnez/SoFi-Report)
 
@@ -387,3 +387,5 @@ The thesis and this presentation are released under the GNU FDLv1.3:
 
 [code_gen_dir_matrix]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/direction.py#L84
 [code_get_dir_info]: https://github.com/hnez/SoFi/blob/009fda7257f8ffa8356bcef2e6556562720c2131/direction.py#L127
+
+[www_thesis]: sofi.pdf
