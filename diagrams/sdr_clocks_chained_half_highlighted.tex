@@ -1,0 +1,116 @@
+\begin{tikzpicture}
+  % Pierce oscillator
+  \draw
+  (2.75, 2.25) node[american not port, rotate=270](pierce_not){}
+  (pierce_not.out) to[short, -*]
+  +(0, -0.5) coordinate(pierce_out) to[short]
+  +(-2, 0) to[R]
+  +(0, 2.5) coordinate(freq_in_ac) to[short]
+  +(2, 0) to[short]
+  (pierce_not.in);
+
+  % Highlight Clkgen
+  \draw[fill=red,opacity=0.3]
+  (-1, 0.5) rectangle
+  +(2.5, 3.5);
+
+  % Input capacitor for chaining
+  \draw
+  (freq_in_ac) to[short, *-]
+  +(-1, 0) to[C]
+  +(0, -2.5) to[short]
+  +(0, -1.5) to[short]
+  +(-1, 0) node[below right]{clock in};
+
+  % Mixer PLL
+  \draw
+  (pierce_out) to[short]
+  +(1.5, 0) coordinate(pierce_out_2) to[twoport, t=PLL, >]
+  +(0, 2) coordinate(mix_pll_out);
+
+  % I and Q Mixers
+  \draw
+  (mix_pll_out)
+  +(0.8, 1.3) node[mixer](mixer_q){}
+  +(0.8, 3.3) node[mixer](mixer_i){};
+
+  \draw
+  (mix_pll_out) to[short]
+  (mixer_q.2) node[inputarrow, rotate=45]{}
+  +(0, -0.2) node[below]{\small $+\SI{90}{\degree}$};
+
+  \draw
+  (mix_pll_out) to[short, *-]
+  +(0, 2) to[short]
+  (mixer_i.2) node[inputarrow, rotate=45]{};
+
+  \draw
+  (mixer_q.1) node[inputarrow]{} to[short]
+  +(-1, 0) coordinate(ant_amp_out) to[amp, invert]
+  +(-2.8, 0) node[antenna](ant_in){};
+
+  \draw
+  (ant_amp_out) to[short, *-]
+  +(0, 2) to[short]
+  (mixer_i.1);
+
+  % Lowpass 1
+  \draw
+  (mixer_i.3) to[lowpass, >]
+  +(3, 0) to[short, -]
+  +(1, 0) to[adc, >]
+  +(2, 0) to[short, -*]
+  +(0.5,0) node[right]{I};
+
+  % Lowpass 2
+  \draw
+  (mixer_q.3) to[lowpass, >]
+  +(3, 0) to[short, -]
+  +(1, 0) to[adc, >]
+  +(2, 0) to[short, -*]
+  +(0.5,0) node[right]{Q};
+
+  % ADC PLL
+  \draw
+  (pierce_out_2) to[short, *-]
+  +(3.0, 0) coordinate(clk_out) to[short]
+  +(2.5, 0) to[twoport, t=PLL, >]
+  +(0, 2) coordinate(adc_pll_tap) to[short]
+  +(0.8, 0.8) node[inputarrow, rotate=45]{};
+
+  % Clock output
+  \draw
+  (clk_out) to[short, *-]
+  +(0, -1.6) to[short]
+  +(5, 0) node[below left]{clock out};
+
+  \draw
+  (adc_pll_tap) to[short, *-]
+  +(0, 2) to[short]
+  +(0.8, 0.8) node[inputarrow, rotate=45]{};
+
+  \draw[densely dotted]
+  (1.50, 0.25) --
+  (5.75, 0.25) --
+  (7.75, 2.25) --
+  (7.75, 7.25) --
+  (1.50, 7.25) --
+  (1.50, 0.25);
+
+  % ADC Box
+  \draw[densely dotted]
+  (8.75, 0.25) --
+  (11.5, 0.25) --
+  (11.5, 7.25) --
+  (8.75, 7.25) --
+  (8.75, 0.25);
+
+  \draw
+  (4.375, 0.25) node[below]{R820T2}
+  (10, 0.25) node[below]{RTL2832U};
+
+  % Frequencies
+  \draw
+  (4.375, 7.25) node[above]{RF}
+  (10, 7.25) node[above]{baseband};
+\end{tikzpicture}
