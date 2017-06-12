@@ -49,7 +49,7 @@ _RTL SDR:_
 
 - USB-Dongles, contain a Realtek 2832U DVB-T Decoder IC
 - OEM software can play FM-Radio
-- FM-radio-feature is implemented using software-defined radio
+- FM-radio feature is implemented using software-defined radio
 - Started a "cheap SDR revolution", prices start at just 10€/dongle
 
 ---
@@ -84,7 +84,7 @@ _Solution:_
 
 - Feed the receivers from a single clock source
 - Other frequencies are derived using PLLs<br />
-  ⇒ no frequency differences
+  ⇒ No frequency differences
 
 ---
 
@@ -201,7 +201,7 @@ Frequency domain
 
 ![Preprocessing chain](diagrams/preprocessing_chain.svg)
 
-- Further processing performed in frequency domain
+- Further processing is performed in the frequency domain
 - Downsampled to reduce processing load
 - Algorithm uses phase-differences <br/>
   ⇒ Phase differences are calculated prior to downsampling
